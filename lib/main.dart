@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'pep',
       theme: ThemeData(
         fontFamily: 'Montserrat',
         primarySwatch: Colors.blue,
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
           // CAN CHANGE HEADLINE AND P STYLELS HERE
         ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'pep'),
     );
   }
 }

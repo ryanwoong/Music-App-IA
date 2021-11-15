@@ -17,56 +17,68 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: buildAppBar(context),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
-        child: ListView(
-          children: <Widget>[
-            const SizedBox(height: 20.0),
-            buildBannerRow(context),
-            const SizedBox(height: 20.0),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: Row(
-                children: <Widget>[
-                  RichText(
-                      text: TextSpan(
-                      style: constants.ThemeText.secondaryTitleText,
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: "Featured Songs",
-                          ),
-                          TextSpan(
-                            text: "more",
-                            style: constants.ThemeText.secondaryText,
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                print("tapped");
-                              }
-                          )
-                        ],
-                      )
-                  )
-                         
-                  // Text("Featured Releases", style: constants.ThemeText.secondaryTitleText),
-                  // Padding(
-                  //   padding: EdgeInsets.only(left: 110),
-                  //   child: Text("more", style: constants.ThemeText.secondaryText),
-                  // )
-                ],
+    return SafeArea(
+      left: false,
+      right: false,
+        child: Scaffold(
+        appBar: buildAppBar(context),
+        body: Padding(
+          padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
+          child: ListView(
+            children: <Widget>[
+              const SizedBox(height: 20.0),
+              buildBannerRow(context),
+              const SizedBox(height: 20.0),
+
+              // Featured Row
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Row(
+                  children: [
+                    const Text("Featured",
+                        style: constants.ThemeText.secondaryTitleText),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.55),
+                      child: TextButton(
+                        onPressed: () {
+                          print("pressed");
+                        },
+                        child: const Text("more",
+                            style: constants.ThemeText.secondaryText),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            buildFeaturedRow(context),
-            const Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: Text("Trending Now",
-                  style: constants.ThemeText.secondaryTitleText),
-            ),
-            buildFeaturedRow(context),
-          ],
+              buildFeaturedRow(context),
+
+              // Trending Row
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Row(
+                  children: [
+                    const Text("Trending Now",
+                        style: constants.ThemeText.secondaryTitleText),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.4),
+                      child: TextButton(
+                        onPressed: () {
+                          print("pressed");
+                        },
+                        child: const Text("more",
+                            style: constants.ThemeText.secondaryText),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              buildFeaturedRow(context),
+            ],
+          ),
         ),
-      ),
+      )
     );
   }
 }
@@ -78,23 +90,21 @@ buildAppBar(BuildContext context) {
       60.0,
     ),
     child: Padding(
-        padding: EdgeInsets.only(
-          top: 50.0,
-          left: 20.0,
-        ),
-        child: Row(
+      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.1, top: 20),
+      child: Row(
           children: <Widget>[
             Text("pep", style: constants.ThemeText.titleText),
             IconButton(
               padding: EdgeInsets.only(
-                  left: MediaQuery.of(context).size.width / 1.5),
+                  left: MediaQuery.of(context).size.width * 0.6),
               icon: const Icon(Icons.person_rounded),
               iconSize: 30.0,
               color: constants.Colors.darkGrey,
               onPressed: () {},
             ),
           ],
-        )),
+        ),
+    )
   );
 }
 
