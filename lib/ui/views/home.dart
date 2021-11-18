@@ -21,11 +21,11 @@ class _HomeState extends State<Home> {
       left: false,
       right: false,
         child: Scaffold(
-        appBar: buildAppBar(context),
         body: Padding(
           padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
           child: ListView(
             children: <Widget>[
+              buildAppBarRow(context),
               const SizedBox(height: 20.0),
               buildBannerRow(context),
               const SizedBox(height: 20.0),
@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
                         style: constants.ThemeText.secondaryTitleText),
                     Padding(
                       padding: EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width * 0.55),
+                          left: MediaQuery.of(context).size.width * 0.45),
                       child: TextButton(
                         onPressed: () {
                           print("pressed");
@@ -62,7 +62,7 @@ class _HomeState extends State<Home> {
                         style: constants.ThemeText.secondaryTitleText),
                     Padding(
                       padding: EdgeInsets.only(
-                          left: MediaQuery.of(context).size.width * 0.4),
+                          left: MediaQuery.of(context).size.width * 0.3),
                       child: TextButton(
                         onPressed: () {
                           print("pressed");
@@ -83,17 +83,17 @@ class _HomeState extends State<Home> {
   }
 }
 
-buildAppBar(BuildContext context) {
+buildAppBarRow(BuildContext context) {
   return PreferredSize(
     preferredSize: Size(
       MediaQuery.of(context).size.width,
       60.0,
     ),
     child: Padding(
-      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.1, top: 20),
+      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.05, top: 20),
       child: Row(
           children: <Widget>[
-            Text("pep", style: constants.ThemeText.titleText),
+            const Text("pep", style: constants.ThemeText.titleText),
             IconButton(
               padding: EdgeInsets.only(
                   left: MediaQuery.of(context).size.width * 0.6),
