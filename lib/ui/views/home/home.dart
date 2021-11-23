@@ -4,8 +4,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pep/ui/shared/widgets/banner_item.dart';
 import 'package:pep/ui/shared/widgets/carousel.dart';
-import '../shared/utils/constants.dart' as constants;
-import '../shared/utils/ads.dart';
+import '../../shared/utils/constants.dart' as constants;
+import '../../shared/utils/ads.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -36,7 +36,7 @@ class _HomeState extends State<Home> {
                 child: Row(
                   children: [
                     const Text("Featured",
-                        style: constants.ThemeText.secondaryTitleText),
+                        style: constants.ThemeText.secondaryTitleTextBlue),
                     Padding(
                       padding: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width * 0.45),
@@ -59,7 +59,7 @@ class _HomeState extends State<Home> {
                 child: Row(
                   children: [
                     const Text("Trending Now",
-                        style: constants.ThemeText.secondaryTitleText),
+                        style: constants.ThemeText.secondaryTitleTextBlue),
                     Padding(
                       padding: EdgeInsets.only(
                           left: MediaQuery.of(context).size.width * 0.3),
