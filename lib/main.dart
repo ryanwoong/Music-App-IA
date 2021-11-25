@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:pep/services/auth.dart';
+import 'package:pep/ui/shared/widgets/loading.dart';
 import 'package:pep/ui/views/home/home.dart';
 import 'package:pep/ui/views/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'ui/shared/utils/constants.dart' as constants;
 
-
-
-void main() async  {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
@@ -23,7 +25,12 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Montserrat',
         primarySwatch: Colors.blue,
         textTheme: const TextTheme(
-          // CAN CHANGE HEADLINE AND P STYLELS HERE
+            // CAN CHANGE HEADLINE AND P STYLELS HERE
+            ),
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: constants.Colors.mainColor,
+          selectionColor: constants.Colors.mainColor,
+          selectionHandleColor: constants.Colors.mainColor,
         ),
       ),
       home: const MyHomePage(title: 'pep'),
@@ -41,11 +48,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Home()
-    );
+    return MaterialApp(home: Wrapper());
   }
 }
