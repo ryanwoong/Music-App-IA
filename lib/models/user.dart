@@ -1,17 +1,8 @@
-class User {
-
-  final String? uid;
-  
-  User({ this.uid });
-
-}
-
-class UserData {
-
-  final String? uid;
-  final String? username;
+class UserAttributes {
+  final bool? isAdmin;
+  final String uid;
   final String? email;
 
-  UserData({ this.uid, this.username, this.email  });
+  UserAttributes( {this.isAdmin, required this.uid, this.email} );
 
 }
