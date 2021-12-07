@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:pep/services/database.dart';
 import 'package:pep/ui/shared/widgets/banner_item.dart';
 import 'package:pep/ui/shared/widgets/loading.dart';
+import 'package:pep/ui/views/admin/admin.dart';
 import 'package:pep/ui/views/profile/profile.dart';
 import '../../shared/utils/constants.dart' as constants;
 import '../../shared/utils/ads.dart';
@@ -44,8 +45,7 @@ class Home extends StatelessWidget {
                             children: [
                               const Text("Featured", style:constants.ThemeText.secondaryTitleTextBlue),
                               Padding(
-                                padding: EdgeInsets.only(
-                                    left: MediaQuery.of(context).size.width * 0.45),
+                                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.45),
                                 child: TextButton(
                                   onPressed: () {
                                     print("pressed");
@@ -68,8 +68,7 @@ class Home extends StatelessWidget {
                                   style:
                                       constants.ThemeText.secondaryTitleTextBlue),
                               Padding(
-                                padding: EdgeInsets.only(
-                                    left: MediaQuery.of(context).size.width * 0.3),
+                                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.3),
                                 child: TextButton(
                                   onPressed: () {
                                     print("pressed");
@@ -114,7 +113,7 @@ class Home extends StatelessWidget {
                       iconSize: 30.0,
                       color: constants.Colors.darkGrey,
                       onPressed: () {
-                        // Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Profile()));
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AdminPage()));
                       },
                     ),
                     IconButton(

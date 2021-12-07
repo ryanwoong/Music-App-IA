@@ -35,10 +35,12 @@ abstract class ThemeText {
 }
 
 abstract class Colors {
-  static const mainColor = Color(0xFFabc4ff);
-  static const darkGrey = Color(0xFFadb5bd);
+  static const mainColor = Color(0xFFABC4FF);
+  static const darkGrey = Color(0xFFADB5BD);
   static const lightGrey = Color(0xFFF2F3F4);
   static const black = Color(0xFF000000);
+  static const error = Color(0xFFFF7675);
+  static const success = Color(0xFF1DD1A1);
 }
 
 abstract class Button {
