@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 
-class FileStructure {
+class SongFile {
   String? statusMessage;
   PlatformFile? songFile;
-  FileStructure({required this.statusMessage, required this.songFile});
+  SongFile({required this.statusMessage, required this.songFile});
 
   PlatformFile? getSongFile() {
     return songFile;
@@ -23,10 +23,25 @@ class FileStructure {
   
 }
 
+class SongImage {
+  String? statusMessage;
+  PlatformFile? songImage;
+  SongImage({required this.statusMessage, required this.songImage});
+
+  PlatformFile? getImageFile() {
+    return songImage;
+  }
+
+  String? getStatusMessage() {
+    return statusMessage;
+  }
+ 
+}
+
 class FileService {
 
 
-  Future<FileStructure> pickFile() async {
+  Future<SongFile> pickAudioFile() async {
     
     // Attempt to get file from user 
     FilePickerResult? result = await FilePicker.platform.pickFiles();
@@ -41,33 +56,44 @@ class FileService {
         print(file.extension);
         print(file.path);
         print(file.runtimeType);
-        return FileStructure(statusMessage: "Success", songFile: file);
+        return SongFile(statusMessage: "File OK", songFile: file);
         
       } else {
-        return FileStructure(statusMessage: "Please select a .mp3 or .wav file", songFile: null);
+        return SongFile(statusMessage: "Please select a .mp3 or .wav file", songFile: null);
         // print("Please select a .mp3 or .wav file");
       }
     } else {
       // User exited
     }
 
-    return FileStructure(statusMessage: "", songFile: null);
+    return SongFile(statusMessage: "", songFile: null);
+  }
 
+  Future<SongImage> pickImageFile() async {
     
-
+    // Attempt to get file from user 
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
     
+    // If there is a file then filter the extension to only accept .mp3 and .wav files
+    if (result != null) {
+      PlatformFile file = result.files.first;
+      if (file.extension == "png" || file.extension == "jpg") {
+        print(file.name);
+        print(file.bytes);
+        print(file.size);
+        print(file.extension);
+        print(file.path);
+        print(file.runtimeType);
+        return SongImage(statusMessage: "File OK", songImage: file);
+        
+      } else {
+        return SongImage(statusMessage: "Please select a .png or .jpg file", songImage: null);
+        // print("Please select a .mp3 or .wav file");
+      }
+    } else {
+      // User exited
+    }
 
-    // if (result != null) {
-    //   PlatformFile file = result.files.first;
-
-      
-    //   // Uint8List fileBytes = result.files.first.bytes;
-    //   // String fileName = result.files.first.name;
-
-    //   // Upload file
-    //   // await FirebaseStorage.instance.ref('uploads/$fileName').putData(fileBytes);
-    // } else {
-
-    // }
+    return SongImage(statusMessage: "", songImage: null);
   }
 }

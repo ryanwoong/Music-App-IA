@@ -30,9 +30,29 @@ class _ProfileState extends State<Profile> {
                   backgroundColor: constants.Colors.mainColor,
                 ),
                 body: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("${snapshot.data!["email"]}"),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        children: const [
+                          Text(
+                            "Your Profile",
+                            style: constants.ThemeText.titleText,
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        children: const [
+                          Text(
+                            "Email",
+                            style: constants.ThemeText.secondaryTitleTextBlue,
+                          )
+                        ],
+                      ),
+                    ),
                     TextButton(
                       style: TextButton.styleFrom(
                           textStyle: const TextStyle(fontSize: 20),
@@ -45,6 +65,22 @@ class _ProfileState extends State<Profile> {
                     ),
                   ],
                 ),
+                // body: Column(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     Text("${snapshot.data!["email"]}"),
+                //     TextButton(
+                //       style: TextButton.styleFrom(
+                //           textStyle: const TextStyle(fontSize: 20),
+                //           backgroundColor: Colors.black),
+                //       onPressed: () {
+                //         authService.signOut();
+                //         Navigator.pop(context);
+                //       },
+                //       child: const Text('sign out'),
+                //     ),
+                //   ],
+                // ),
               ),
             );
           }

@@ -16,6 +16,7 @@ class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthService authService = AuthService();
+  String? _error = "";
 
   @override
   Widget build(BuildContext context) {
@@ -71,15 +72,26 @@ class _LoginState extends State<Login> {
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: TextButton(
-                  style: constants.Button.textButton,
-                  child: const Text(
-                    "Log In",
-                    style: TextStyle(color: Colors.white),
+                child: Text(
+                  "$_error",
+                  style: constants.ThemeText.errorText
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: SizedBox(
+                  height: 45.0,
+                  width: 120.0,
+                  child: TextButton(
+                    style: constants.Button.textButton,
+                    child: const Text(
+                      "Log In",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () {
+                      authService.signIn(_emailController.text.trim(), _passwordController.text);
+                    },
                   ),
-                  onPressed: () {
-                    authService.signIn(_emailController.text.trim(), _passwordController.text);
-                  },
                 )
               ),
               RichText(

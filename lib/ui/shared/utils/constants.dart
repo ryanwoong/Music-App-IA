@@ -31,7 +31,9 @@ abstract class ThemeText {
       fontSize: 15,
       fontFamily: 'Montserrat',
       fontWeight: FontWeight.w800);
-  static const errorText = TextStyle(color: Color(0xFFE74C3C));
+  static const errorText = TextStyle(
+      color: Color(0xFFE74C3C),
+      fontSize: 12);
 }
 
 abstract class Colors {

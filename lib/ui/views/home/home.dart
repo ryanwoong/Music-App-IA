@@ -1,8 +1,11 @@
 // ignore_for_file: file_names
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:pep/models/song.dart';
 import 'package:pep/services/database.dart';
 import 'package:pep/ui/shared/widgets/banner_item.dart';
 import 'package:pep/ui/shared/widgets/loading.dart';
@@ -21,7 +24,6 @@ class Home extends StatelessWidget {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: DatabaseService(uid: _currentUser.uid).userData,
       builder: (context, snapshot) {
-
         if (snapshot.connectionState == ConnectionState.active) {
           return SafeArea(
             left: false,
@@ -64,9 +66,7 @@ class Home extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 10),
                           child: Row(
                             children: [
-                              const Text("Trending Now",
-                                  style:
-                                      constants.ThemeText.secondaryTitleTextBlue),
+                              const Text("Trending Now",style: constants.ThemeText.secondaryTitleTextBlue),
                               Padding(
                                 padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.3),
                                 child: TextButton(
@@ -146,41 +146,69 @@ class Home extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               Map ad = ads[index];
 
-              return Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: BannerItem(
-                    title: ad["item"], desc: ad["desc"], img: ad["img"]),
-              );
+              return Container();
+              // return Padding(
+              //   padding: const EdgeInsets.only(right: 10.0),
+              //   child: BannerItem(
+              //       title: ad["item"], desc: ad["desc"], img: ad["img"]),
+              // );
             },
           ),
         ));
   }
 
   buildFeaturedRow(BuildContext context) {
-    return Container(
-        height: MediaQuery.of(context).size.height / 3.5,
-        width: MediaQuery.of(context).size.width,
-        child: ScrollConfiguration(
-          behavior: const ScrollBehavior(),
-          child: ListView.builder(
-            primary: false,
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemCount: songs == null ? 0 : songs.length,
-            itemBuilder: (BuildContext context, int index) {
-              Map song = songs[index];
 
-              return Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: BannerItem(
-                    title: song["item"],
-                    desc: song["desc"],
-                    img: song["img"],
-                    height: 0.6,
-                    width: 0.4),
+    // Stream<List<SongModel>> songs = DatabaseService(artist: "Jeremy").trendingSongs;
+
+    return Container(
+      height: MediaQuery.of(context).size.height / 3.5,
+      width: MediaQuery.of(context).size.width,
+      child: ScrollConfiguration(
+        behavior: const ScrollBehavior(),
+        child: 
+         StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance.collection("artists").doc("Jeremy").collection("songs").snapshots(),
+          builder: (BuildContext context, snapshot) {
+            if (!snapshot.hasData) {
+              return Loading();
+            } else {
+            
+              // return Text("${snapshot.data}");
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  var result = snapshot.data!.docs[index];
+                  // List<SongModel> _activities = snapshot.data!.docs.map((e) => e.data()).toList();
+                  var artistName = result.data()["artists"];
+                  var songName = result.data()["songName"];
+                  var songImgLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName}%2F${songName}%2F${songName}-Image?alt=media";
+  
+                  print("PRINT");
+                  print(result);
+                  return BannerItem(title: "title", desc: "desc", img: songImgLink);
+                  // return Container(
+                  //   height: MediaQuery.of(context).size.height * 0.25,
+                  //   width: 150,
+                  //   child: Card(
+                  //     elevation: 0,
+                  //     semanticContainer: false,
+                  //     clipBehavior: Clip.antiAlias,
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(15.0)
+                  //     ),
+                  //     child: Image.network("${songImgLink}", fit: BoxFit.cover,),
+                      
+                  //   ),
+                  // );
+                }
               );
-            },
-          ),
-        ));
+              
+            }
+          }
+        )
+      )
+    );
   }
 }
