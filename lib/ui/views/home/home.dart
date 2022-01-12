@@ -100,7 +100,7 @@ class Home extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.only(
-              left: MediaQuery.of(context).size.width * 0.05, top: 20),
+              left: MediaQuery.of(context).size.width * 0.04, top: 20),
           child: Row(
             children: <Widget>[
               const Text("pep", style: constants.ThemeText.titleText),
@@ -161,6 +161,8 @@ class Home extends StatelessWidget {
 
     // Stream<List<SongModel>> songs = DatabaseService(artist: "Jeremy").trendingSongs;
 
+    
+
     return Container(
       height: MediaQuery.of(context).size.height / 3.5,
       width: MediaQuery.of(context).size.width,
@@ -168,7 +170,7 @@ class Home extends StatelessWidget {
         behavior: const ScrollBehavior(),
         child: 
          StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: FirebaseFirestore.instance.collection("artists").doc("Jeremy").collection("songs").snapshots(),
+          stream: FirebaseFirestore.instance.collection("artists").doc("jeremy").collection("songs").snapshots(),
           builder: (BuildContext context, snapshot) {
             if (!snapshot.hasData) {
               return Loading();
@@ -181,13 +183,16 @@ class Home extends StatelessWidget {
                 itemBuilder: (context, index) {
                   var result = snapshot.data!.docs[index];
                   // List<SongModel> _activities = snapshot.data!.docs.map((e) => e.data()).toList();
-                  var artistName = result.data()["artists"];
-                  var songName = result.data()["songName"];
-                  var songImgLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName}%2F${songName}%2F${songName}-Image?alt=media";
-  
+                  String artistName = result.data()["artists"];
+                  String songName = result.data()["songName"];
+                  var songImgLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}-Image?alt=media";
+                  var songFileLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}?alt=media";
+
                   print("PRINT");
                   print(result);
-                  return BannerItem(title: "title", desc: "desc", img: songImgLink);
+                  return BannerItem(title: "title", desc: "desc", img: songImgLink, songFile: songFileLink, data: result);
+
+                  
                   // return Container(
                   //   height: MediaQuery.of(context).size.height * 0.25,
                   //   width: 150,

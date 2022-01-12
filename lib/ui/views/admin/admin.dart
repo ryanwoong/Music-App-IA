@@ -310,15 +310,9 @@ class _AdminPageState extends State<AdminPage> {
                                         style: TextStyle(color: Colors.white),
                                       ),
                                       onPressed: () async {
-                                        Future<List<Reference>?> items = DatabaseService().getSongImg("Jeremy", "Summer");
-                                        // DatabaseService().getSongs("Jeremy", "summer.");
-                                        // Stream<QuerySnapshot<Map<String, dynamic>>> songData = DatabaseService().getFeaturedSongs("Jeremy");
-                                        // Stream<SongModel> songData = DatabaseService(artist: "Jeremy").trendingSongs as Stream<SongModel>;
-                                        // for(var i = 0; i < list.length; i++){
-                                        //     print(list[i]);
-                                        // }
-                                        // DatabaseService().getSongs();
-                                      
+                                        // Future<List<Reference>?> items = DatabaseService().getSongImg("Jeremy", "Summer");
+                                        Future<QuerySnapshot> doc = DatabaseService().getRanArtist();
+                             
                                       },
                                     ),
                                   ),

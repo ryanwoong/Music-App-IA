@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pep/models/song.dart';
+import 'dart:math';
 
 class DatabaseService {
   final String? uid;
@@ -56,7 +57,7 @@ class DatabaseService {
     File _songFile = File(songFile?.path ?? "");
     File _songImage = File(songImage?.path ?? "");
 
-    String? directory = artistName;
+    String? directory = artistName.toLowerCase();
 
     // Creating metadata from user input
     SettableMetadata metadata = SettableMetadata(
@@ -67,61 +68,62 @@ class DatabaseService {
       },
     );
 
+    // Try to create the new files, saving the audio and imgage file
+    // Also add the information into database as documents
     try {
+      int max = 5000;
+      int min = 0;
+      num randomNum = Random().nextInt(max - min) + min;
       await storage.ref("${directory}/${songName}/${songName}").putFile(_songFile, metadata).then((_) =>  storage.ref("${directory}/${songName}/${songName}-Image").putFile(_songImage, metadata));
       await artistCollection
-        .doc(artistName)
+        .doc(directory)
         .collection("songs")
         .doc(songName)
         .set({
           "songName": songName,
           "artists": artistName,
           "isFeatured": false,
-          "isTrending": false
+          "isTrending": false,
+          "random": randomNum
         })
         .then((value) => print("Song Added"))
         .catchError((error) => print("Failed to add song: $error"));
     } on FirebaseException catch (e) {
       print(e);
-      // e.g, e.code == 'canceled'
+      
     }
   }
 
 
-  // Get song name from songs collection
-  // Get song file using the song name
+  // List<SongModel> _songFromSnapshot(QueryDocumentSnapshot snapshot){
+  //   return snapshot.map((doc) {
+  //     return SongModel(
+  //       songName: doc["songName"],
+  //       artist: doc["artists"],
+  //       isTrending: doc["isTrending"],
+  //       isFeatured: doc["isFeatured"],
+  //       random: doc["random"]
+  //     );
+  //   }).toList();
+  // }
 
-  SongModel? _songModel (SongModel? song) {
-    if (song == null) {
-      return null;
-    }
-    return SongModel(songName: song.songName, artist: song.artist, isTrending: song.isTrending, isFeatured: song.isFeatured);
+
+  Future<QuerySnapshot> getRanArtist() async {
+    int max = 5000;
+    int min = 0;
+    num randomNum = Random().nextInt(max - min) + min;
+
+    return artistCollection.get();
+    
   }
 
-  List<SongModel> _messagesFromSnapshot(QuerySnapshot snapshot){
-    return snapshot.docs.map((doc) {
-
-      // String username = await getUsernameByUID(doc.data["uid"]);
-
-      return SongModel(
-        songName: doc["songName"],
-        artist: doc["artists"],
-        isTrending: doc["isTrending"],
-        isFeatured: doc["isFeatured"]
-        // text: doc.data["text"] ?? "",
-        // username: username ?? "",
-        // time: doc.data["time"] ?? "",
-      );
-    }).toList();
-  }
-
-  Stream<QuerySnapshot> get trendingSongs {
-    return artistCollection
-      .doc("Jeremy")
-      .collection("songs")
-      .where("isFeatured", isEqualTo: true)
-      .snapshots();
-  }
+  // Stream<QuerySnapshot> get trendingSongs {
+  //   return artistCollection
+  //     .doc("Jeremy")
+  //     .collection("songs")
+  //     .where("isFeatured", isEqualTo: true)
+  //     .snapshots();
+  // }
 
 
 //   Stream readSomething(String docId){
@@ -132,12 +134,6 @@ class DatabaseService {
     FirebaseStorage _storage = FirebaseStorage.instance;
     try {
       ListResult result = await _storage.ref().child("$artist").child("$songName").listAll();
-      // print(result.getData());
-      // print(result.items);
-    
-      // result.items.forEach((Reference ref) {
-      //   print('Found file: ${ref.runtimeType}');
-      // });
       if(result == null) {
         return null;
       }
@@ -145,29 +141,6 @@ class DatabaseService {
     } catch (e) {
       print(e);
     }
-    // final List<Reference> allFiles = result.items;
 
-    
-
-    // return SongFiles(imageFile: _songImg, )
   }
-
-
-  // Stream<QuerySnapshot<Map<String, dynamic>>> getFeaturedSongs(String artist) {
-  //   print("click");
-  //   Stream<QuerySnapshot<Map<String, dynamic>>> songSnapshot = artistCollection.doc("Jeremy").collection("songs").where("isFeatured", isEqualTo: true).snapshots();
-
-  //   songSnapshot.map(_songModel);
-    
-  // }
-
-  // Stream<QuerySnadypshot> get getSongs {
-  //   // final songDocuments = await songs.get();
-  //   // for (var document in songDocuments.docs) { 
-  //   //   print(document.documentID);
-  //   // }
-  //   // print(results.toString());
-  //   Stream songStream = songs.snapshots();
-  //   return songStream;
-  // }
 }
