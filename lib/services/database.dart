@@ -3,10 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pep/models/song.dart';
-import 'dart:math';
+import 'package:firebase_storage/firebase_storage.dart';s
 
 class DatabaseService {
   final String? uid;
@@ -26,6 +23,11 @@ class DatabaseService {
         .snapshots();
   }
 
+  Stream<QuerySnapshot<Map<String, dynamic>>> get artists {
+    return FirebaseFirestore.instance.collection("artists").where("isArtist", isEqualTo: true).snapshots();
+    
+  }
+
   Future<void> addUser(String uid, String username, String email) {
     // Call the user's CollectionReference to add a new user
     return users
@@ -38,6 +40,11 @@ class DatabaseService {
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
+  }
+
+  Future<void> addArtist(String artistName) async {
+    await artistCollection.doc("artists").update({"artists": FieldValue.arrayUnion([artistName.toLowerCase()]) });
+    await artistCollection.doc(artistName.toLowerCase()).set({ "isArtist": true });
   }
 
   Future<bool> findUsername(String username) async {
@@ -71,9 +78,7 @@ class DatabaseService {
     // Try to create the new files, saving the audio and imgage file
     // Also add the information into database as documents
     try {
-      int max = 5000;
-      int min = 0;
-      num randomNum = Random().nextInt(max - min) + min;
+      await addArtist(artistName);
       await storage.ref("${directory}/${songName}/${songName}").putFile(_songFile, metadata).then((_) =>  storage.ref("${directory}/${songName}/${songName}-Image").putFile(_songImage, metadata));
       await artistCollection
         .doc(directory)
@@ -82,9 +87,10 @@ class DatabaseService {
         .set({
           "songName": songName,
           "artists": artistName,
-          "isFeatured": false,
-          "isTrending": false,
-          "random": randomNum
+          "likes": 0
+          // "isFeatured": false,
+          // "isTrending": false,
+          // "random": randomNum
         })
         .then((value) => print("Song Added"))
         .catchError((error) => print("Failed to add song: $error"));
@@ -108,14 +114,32 @@ class DatabaseService {
   // }
 
 
-  Future<QuerySnapshot> getRanArtist() async {
-    int max = 5000;
-    int min = 0;
-    num randomNum = Random().nextInt(max - min) + min;
+  // Future<void> getRanArtist() async {
 
-    return artistCollection.get();
-    
-  }
+  //   artistCollection.doc("artists").get().then((value) {
+  //     var artistArr = value.get("artists");
+  //     var arrSize = artistArr.length - 1;
+      
+  //     int min = 0;
+  //     int max = arrSize;
+  //     num randomNum = Random().nextInt(max - min) + min;
+
+  //   });
+  
+
+  // }
+
+  // Future<List?> getAllArtists() async {
+  //   try {
+  //     artistCollection.doc("artists").get().then((value) {
+  //       var artistArr = value.get("artists");
+  //       // print(artistArr);
+  //       return artistArr;
+  //     });
+  //   } catch (e) {
+  //     return null;
+  //   }
+  // }
 
   // Stream<QuerySnapshot> get trendingSongs {
   //   return artistCollection

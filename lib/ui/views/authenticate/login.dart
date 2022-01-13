@@ -50,7 +50,7 @@ class _LoginState extends State<Login> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const <Widget>[
-                    Text("pep", style: constants.ThemeText.titleText),
+                    Text("pep", style: constants.ThemeText.titleTextBlue),
                   ],
                 ),
                 const SizedBox(height: 20.0),

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
 abstract class ThemeText {
-  static const titleText = TextStyle(
+  static const titleTextBlue = TextStyle(
       color: Colors.mainColor,
+      fontSize: 30,
+      fontFamily: 'Montserrat',
+      fontWeight: FontWeight.bold);
+  static const titleTextBlack = TextStyle(
+      color: Colors.black,
       fontSize: 30,
       fontFamily: 'Montserrat',
       fontWeight: FontWeight.bold);
@@ -26,6 +31,11 @@ abstract class ThemeText {
       fontSize: 15,
       fontFamily: 'Montserrat',
       fontWeight: FontWeight.w500);
+  static const smallTextBoldBlack = TextStyle(
+      color: Colors.black,
+      fontSize: 15,
+      fontFamily: 'Montserrat',
+      fontWeight: FontWeight.bold);
   static const linkText = TextStyle(
       color: Colors.mainColor,
       fontSize: 15,

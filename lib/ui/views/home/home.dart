@@ -5,12 +5,14 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pep/models/song.dart';
 import 'package:pep/services/database.dart';
 import 'package:pep/ui/shared/widgets/banner_item.dart';
 import 'package:pep/ui/shared/widgets/loading.dart';
 import 'package:pep/ui/views/admin/admin.dart';
 import 'package:pep/ui/views/profile/profile.dart';
+import 'package:rxdart/rxdart.dart';
 import '../../shared/utils/constants.dart' as constants;
 import '../../shared/utils/ads.dart';
 
@@ -39,48 +41,59 @@ class Home extends StatelessWidget {
                         const SizedBox(height: 20.0),
                         buildBannerRow(context),
                         const SizedBox(height: 20.0),
-    
-                        // Featured Row
+
+                        // Feed
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Row(
-                            children: [
-                              const Text("Featured", style:constants.ThemeText.secondaryTitleTextBlue),
-                              Padding(
-                                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.45),
-                                child: TextButton(
-                                  onPressed: () {
-                                    print("pressed");
-                                  },
-                                  child: const Text("more",
-                                      style: constants.ThemeText.secondaryText),
-                                ),
-                              ),
+                            children: const [
+                              Text("Feed", style:constants.ThemeText.secondaryTitleTextBlue),
                             ],
                           ),
                         ),
                         buildFeaturedRow(context),
     
-                        // Trending Row
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              const Text("Trending Now",style: constants.ThemeText.secondaryTitleTextBlue),
-                              Padding(
-                                padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.3),
-                                child: TextButton(
-                                  onPressed: () {
-                                    print("pressed");
-                                  },
-                                  child: const Text("more",
-                                      style: constants.ThemeText.secondaryText),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        buildFeaturedRow(context),
+                        // // Featured Row
+                        // Padding(
+                        //   padding: const EdgeInsets.only(top: 10),
+                        //   child: Row(
+                        //     children: [
+                        //       const Text("Featured", style:constants.ThemeText.secondaryTitleTextBlue),
+                        //       Padding(
+                        //         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.45),
+                        //         child: TextButton(
+                        //           onPressed: () {
+                        //             print("pressed");
+                        //           },
+                        //           child: const Text("more",
+                        //               style: constants.ThemeText.secondaryText),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        // buildFeaturedRow(context),
+    
+                        // // Trending Row
+                        // Padding(
+                        //   padding: const EdgeInsets.only(top: 10),
+                        //   child: Row(
+                        //     children: [
+                        //       const Text("Trending Now",style: constants.ThemeText.secondaryTitleTextBlue),
+                        //       Padding(
+                        //         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.3),
+                        //         child: TextButton(
+                        //           onPressed: () {
+                        //             print("pressed");
+                        //           },
+                        //           child: const Text("more",
+                        //               style: constants.ThemeText.secondaryText),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
+                        // buildFeaturedRow(context),
                       ],
                     ),
                   )),
@@ -103,7 +116,7 @@ class Home extends StatelessWidget {
               left: MediaQuery.of(context).size.width * 0.04, top: 20),
           child: Row(
             children: <Widget>[
-              const Text("pep", style: constants.ThemeText.titleText),
+              const Text("pep", style: constants.ThemeText.titleTextBlue),
               Padding(
                 padding: EdgeInsets.only(left: snapshot.data!["isAdmin"] == false ? MediaQuery.of(context).size.width * 0.6 : MediaQuery.of(context).size.width * 0.5),
                 child: Row(
@@ -158,60 +171,34 @@ class Home extends StatelessWidget {
   }
 
   buildFeaturedRow(BuildContext context) {
-
-    // Stream<List<SongModel>> songs = DatabaseService(artist: "Jeremy").trendingSongs;
-
-    
-
     return Container(
-      height: MediaQuery.of(context).size.height / 3.5,
+      height: MediaQuery.of(context).size.height / 3,
       width: MediaQuery.of(context).size.width,
       child: ScrollConfiguration(
         behavior: const ScrollBehavior(),
-        child: 
-         StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: FirebaseFirestore.instance.collection("artists").doc("jeremy").collection("songs").snapshots(),
+        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance.collectionGroup("songs").snapshots(),
           builder: (BuildContext context, snapshot) {
             if (!snapshot.hasData) {
               return Loading();
             } else {
             
-              // return Text("${snapshot.data}");
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
                   var result = snapshot.data!.docs[index];
-                  // List<SongModel> _activities = snapshot.data!.docs.map((e) => e.data()).toList();
                   String artistName = result.data()["artists"];
                   String songName = result.data()["songName"];
                   var songImgLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}-Image?alt=media";
                   var songFileLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}?alt=media";
-
-                  print("PRINT");
-                  print(result);
-                  return BannerItem(title: "title", desc: "desc", img: songImgLink, songFile: songFileLink, data: result);
-
-                  
-                  // return Container(
-                  //   height: MediaQuery.of(context).size.height * 0.25,
-                  //   width: 150,
-                  //   child: Card(
-                  //     elevation: 0,
-                  //     semanticContainer: false,
-                  //     clipBehavior: Clip.antiAlias,
-                  //     shape: RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.circular(15.0)
-                  //     ),
-                  //     child: Image.network("${songImgLink}", fit: BoxFit.cover,),
-                      
-                  //   ),
-                  // );
+                  return SongItem(img: songImgLink, songFile: songFileLink, data: result);
                 }
               );
               
             }
           }
+
         )
       )
     );

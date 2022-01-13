@@ -37,7 +37,7 @@ class _ProfileState extends State<Profile> {
                         children: const [
                           Text(
                             "Your Profile",
-                            style: constants.ThemeText.titleText,
+                            style: constants.ThemeText.titleTextBlue,
                           )
                         ],
                       ),

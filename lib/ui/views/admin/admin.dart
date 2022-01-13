@@ -101,7 +101,7 @@ class _AdminPageState extends State<AdminPage> {
                               child: Row(
                                 children: const <Widget>[
                                   Text("Add Song",
-                                      style: constants.ThemeText.titleText),
+                                      style: constants.ThemeText.titleTextBlue),
                                 ],
                               ),
                             ),
@@ -311,8 +311,10 @@ class _AdminPageState extends State<AdminPage> {
                                       ),
                                       onPressed: () async {
                                         // Future<List<Reference>?> items = DatabaseService().getSongImg("Jeremy", "Summer");
-                                        Future<QuerySnapshot> doc = DatabaseService().getRanArtist();
-                             
+                                        // DatabaseService().getRanArtist();
+                                        // DatabaseService().getAllSongs();
+                                       
+                                       
                                       },
                                     ),
                                   ),

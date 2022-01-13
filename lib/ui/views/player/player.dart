@@ -1,12 +1,15 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:pep/ui/views/player/player_manager.dart';
+import 'package:pep/ui/shared/utils/constants.dart' as constants;
 
 class Player extends StatefulWidget {
 
+  final String songName;
+  final String artist;
   final String songFileLink;
 
-  const Player({Key? key, required this.songFileLink}) : super(key: key);
+  const Player({Key? key, required this.songName, required this.artist, required this.songFileLink}) : super(key: key);
 
   @override
   _PlayerState createState() => _PlayerState();
@@ -29,12 +32,29 @@ class _PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Padding(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: constants.Colors.mainColor,
+      ),
+      body: SafeArea(
+        left: false,
+        right: false,
+        child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
+              Row(
+                children: [
+                  Text("${widget.songName}", style: constants.ThemeText.titleTextBlack),
+                ],
+              ),
+              const SizedBox(height: 5.0),
+              Row(
+                children: [
+                  Text("${widget.artist}", style: constants.ThemeText.secondaryText),
+                ],
+              ),
               const Spacer(),
               ValueListenableBuilder<ProgressBarState>(
                 valueListenable: _pageManager.progressNotifier,
