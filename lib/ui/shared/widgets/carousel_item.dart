@@ -9,14 +9,16 @@ class SongItem extends StatefulWidget {
   // ? is null - needed?
   final String img;
   final String songFile;
-  final QueryDocumentSnapshot<Map<String, dynamic>> data;
+  // final List data;
+  final Map data;
   // num can use 9 and 9.0
 
   SongItem(
       {Key? key,
       required this.img,
       required this.songFile,
-      required this.data})
+      required this.data
+      })
       : super(key: key);
 
   @override
@@ -27,13 +29,11 @@ class _SongItemState extends State<SongItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
-        child: Column(
+        return Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.25,
-              width: 150,
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: MediaQuery.of(context).size.height / 3,
               child: Card(
                 elevation: 0,
                 semanticContainer: false,
@@ -44,15 +44,16 @@ class _SongItemState extends State<SongItem> {
                   splashColor: constants.Colors.lightGrey,
                   onTap: () {
                     // print("data ${widget.data.data()["artists"]}");
-                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Player(songName: widget.data.data()["songName"], artist: widget.data.data()["artists"], songFileLink: widget.songFile)));
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Player(songName: widget.data["songName"], artist: widget.data["artists"], songFileLink: widget.songFile)));
                   },
                   child: Image.network("${widget.img}", fit: BoxFit.cover),
                 ),
               ),
             ),
-            Text("${widget.data.data()["songName"]}", style: constants.ThemeText.smallTextBoldBlack),
-            Text("by ${widget.data.data()["artists"]}")
+            // Text("${widget.data.data()["songName"]}", style: constants.ThemeText.smallTextBoldBlack),
+            // Text("by ${widget.data.data()["artists"]}")
           ],
-        ));
+        );
+      
   }
 }

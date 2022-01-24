@@ -1,27 +1,30 @@
-// ignore_for_file: file_names
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:pep/models/song.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:pep/services/database.dart';
-import 'package:pep/ui/shared/widgets/banner_item.dart';
+import 'package:pep/ui/shared/widgets/carousel_item.dart';
 import 'package:pep/ui/shared/widgets/loading.dart';
 import 'package:pep/ui/views/admin/admin.dart';
 import 'package:pep/ui/views/profile/profile.dart';
-import 'package:rxdart/rxdart.dart';
 import '../../shared/utils/constants.dart' as constants;
 import '../../shared/utils/ads.dart';
 
-class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
-
+class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var _currentUser = FirebaseAuth.instance.currentUser!;
+    // var songArr;
+    var songArr = useState([]);
+
+    useEffect(() {
+      DatabaseService().getSongs().then((value) {
+        print("test $value ");
+        songArr.value = value;
+        // print(value);
+      });
+
+    }, []);
 
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: DatabaseService(uid: _currentUser.uid).userData,
@@ -39,19 +42,19 @@ class Home extends StatelessWidget {
                       children: <Widget>[
                         buildAppBarRow(context, snapshot),
                         const SizedBox(height: 20.0),
-                        buildBannerRow(context),
-                        const SizedBox(height: 20.0),
+                        // buildBannerRow(context),
+                        // const SizedBox(height: 20.0),
 
                         // Feed
                         Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Row(
                             children: const [
-                              Text("Feed", style:constants.ThemeText.secondaryTitleTextBlue),
+                              Text("Your Feed", style:constants.ThemeText.secondaryTitleTextBlue),
                             ],
                           ),
                         ),
-                        buildFeaturedRow(context),
+                        buildFeed(context, songArr),
     
                         // // Featured Row
                         // Padding(
@@ -104,8 +107,7 @@ class Home extends StatelessWidget {
     );
   }
 
-
-  buildAppBarRow(BuildContext context, snapshot) {
+   buildAppBarRow(BuildContext context, snapshot) {
     return PreferredSize(
         preferredSize: Size(
           MediaQuery.of(context).size.width,
@@ -170,37 +172,28 @@ class Home extends StatelessWidget {
         ));
   }
 
-  buildFeaturedRow(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height / 3,
-      width: MediaQuery.of(context).size.width,
-      child: ScrollConfiguration(
-        behavior: const ScrollBehavior(),
-        child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: FirebaseFirestore.instance.collectionGroup("songs").snapshots(),
-          builder: (BuildContext context, snapshot) {
-            if (!snapshot.hasData) {
-              return Loading();
-            } else {
-            
-              return ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  var result = snapshot.data!.docs[index];
-                  String artistName = result.data()["artists"];
-                  String songName = result.data()["songName"];
-                  var songImgLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}-Image?alt=media";
-                  var songFileLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}?alt=media";
-                  return SongItem(img: songImgLink, songFile: songFileLink, data: result);
-                }
-              );
-              
-            }
-          }
+  buildFeed(BuildContext context, ValueNotifier<List<dynamic>> songArr) {
+    int _index = 0;
 
-        )
-      )
+    return Container(
+      height: MediaQuery.of(context).size.height / 2,
+      width: MediaQuery.of(context).size.width,
+      child: PageView.builder(
+        itemCount: songArr.value.length,
+        controller: PageController(viewportFraction: 0.7),
+        onPageChanged: (int index) => _index = index,
+        itemBuilder: (_, i) {
+          String artistName = songArr.value[i]["artists"];
+          String songName = songArr.value[i]["songName"];
+          var songImgLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}-Image?alt=media";
+          var songFileLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}?alt=media";
+          
+
+          return SongItem(img: songImgLink, songFile: songFileLink, data: songArr.value[i],);
+ 
+        },
+      ),
     );
+
   }
 }

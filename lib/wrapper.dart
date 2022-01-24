@@ -19,7 +19,7 @@ class Wrapper extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             UserAttributes? user = snapshot.data;
             print("data: ${user}");
-            return user == null ? const Login() : const Home();
+            return user == null ? const Login() : Home();
           }
           if (snapshot.hasError) {
             print('SNAPSHOT ERROR: ${snapshot.error}');

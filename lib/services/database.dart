@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';s
+import 'package:firebase_storage/firebase_storage.dart';
 
 class DatabaseService {
   final String? uid;
@@ -167,4 +167,37 @@ class DatabaseService {
     }
 
   }
+
+  // Future<QuerySnapshot<Map<String, dynamic>>?>
+
+  Future<List> getSongs() async {
+    var songArr = [];
+    await FirebaseFirestore.instance.collectionGroup("songs").get().then((doc) {
+      // print(doc.docs[0].data());
+      // print(doc.docs.length);
+
+      for (var i=0; i<doc.docs.length; i++) {
+        songArr.add(doc.docs[i].data());
+      }
+      // print(songArr);
+      
+    });
+    return songArr;
+  }
+
+  // Future<QuerySnapshot<Map<String, dynamic>>?> getSongs() async {
+  //   var songArr = [];
+  //   await FirebaseFirestore.instance.collectionGroup("songs").get().then((doc) {
+  //     // print(doc.docs[0].data());
+  //     // print(doc.docs.length);
+
+  //     // for (var i=0; i<doc.docs.length; i++) {
+  //     //   songArr.add(doc.docs[i].data());
+  //     // }
+  //     // print(songArr);
+  //     print(doc);
+  //     return doc;
+  //   });
+  //   // return songArr;
+  // }
 }
