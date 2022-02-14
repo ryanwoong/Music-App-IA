@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,7 +12,7 @@ class DatabaseService {
 
   CollectionReference users = FirebaseFirestore.instance.collection("users");
   CollectionReference artistCollection = FirebaseFirestore.instance.collection("artists");
-  final _firestore = FirebaseFirestore.instance;
+  // final _firestore = FirebaseFirestore.instance;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> get userData {
     var _currentUser = FirebaseAuth.instance.currentUser!;
@@ -47,16 +46,15 @@ class DatabaseService {
     await artistCollection.doc(artistName.toLowerCase()).set({ "isArtist": true });
   }
 
-  Future<bool> findUsername(String username) async {
-    final results = await users.where("username", isEqualTo: username).get();
-    print(results.docs.isEmpty);
-    return results.docs.isEmpty;
-  }
+  void addComment(String artistName, String songName, String comment) {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+    final uid = user?.uid;
 
-  Future<bool> findEmail(String email) async {
-    final results = await users.where("email", isEqualTo: email).get();
-    print(results.docs.isEmpty);
-    return results.docs.isEmpty;
+    artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).collection("comments").add({
+      "author": uid,
+      "comment": comment
+    });
   }
 
   Future<void> saveSong(PlatformFile? songFile, PlatformFile? songImage, String songName, String artistName) async {
@@ -87,72 +85,28 @@ class DatabaseService {
         .set({
           "songName": songName,
           "artists": artistName,
-          "likes": 0
-          // "isFeatured": false,
-          // "isTrending": false,
-          // "random": randomNum
+          "likes": 0,
         })
-        .then((value) => print("Song Added"))
+        .then((value) {
+          // print("Song Added");
+        })
         .catchError((error) => print("Failed to add song: $error"));
     } on FirebaseException catch (e) {
-      print(e);
-      
+      // print(e);
     }
   }
 
+  Future<bool> findUsername(String username) async {
+    final results = await users.where("username", isEqualTo: username).get();
+    print(results.docs.isEmpty);
+    return results.docs.isEmpty;
+  }
 
-  // List<SongModel> _songFromSnapshot(QueryDocumentSnapshot snapshot){
-  //   return snapshot.map((doc) {
-  //     return SongModel(
-  //       songName: doc["songName"],
-  //       artist: doc["artists"],
-  //       isTrending: doc["isTrending"],
-  //       isFeatured: doc["isFeatured"],
-  //       random: doc["random"]
-  //     );
-  //   }).toList();
-  // }
-
-
-  // Future<void> getRanArtist() async {
-
-  //   artistCollection.doc("artists").get().then((value) {
-  //     var artistArr = value.get("artists");
-  //     var arrSize = artistArr.length - 1;
-      
-  //     int min = 0;
-  //     int max = arrSize;
-  //     num randomNum = Random().nextInt(max - min) + min;
-
-  //   });
-  
-
-  // }
-
-  // Future<List?> getAllArtists() async {
-  //   try {
-  //     artistCollection.doc("artists").get().then((value) {
-  //       var artistArr = value.get("artists");
-  //       // print(artistArr);
-  //       return artistArr;
-  //     });
-  //   } catch (e) {
-  //     return null;
-  //   }
-  // }
-
-  // Stream<QuerySnapshot> get trendingSongs {
-  //   return artistCollection
-  //     .doc("Jeremy")
-  //     .collection("songs")
-  //     .where("isFeatured", isEqualTo: true)
-  //     .snapshots();
-  // }
-
-
-//   Stream readSomething(String docId){
-//     return FirebaseFirestore.instance.collection("campdata").doc(docId).snapshots();
-// } 
+  Future<bool> findEmail(String email) async {
+    final results = await users.where("email", isEqualTo: email).get();
+    print(results.docs.isEmpty);
+    return results.docs.isEmpty;
+  }
 
   Future<List<Reference>?> getSongImg(String artist, String songName) async {
     FirebaseStorage _storage = FirebaseStorage.instance;
@@ -168,36 +122,32 @@ class DatabaseService {
 
   }
 
-  // Future<QuerySnapshot<Map<String, dynamic>>?>
-
   Future<List> getSongs() async {
     var songArr = [];
     await FirebaseFirestore.instance.collectionGroup("songs").get().then((doc) {
-      // print(doc.docs[0].data());
-      // print(doc.docs.length);
-
       for (var i=0; i<doc.docs.length; i++) {
         songArr.add(doc.docs[i].data());
       }
-      // print(songArr);
       
     });
     return songArr;
   }
 
-  // Future<QuerySnapshot<Map<String, dynamic>>?> getSongs() async {
-  //   var songArr = [];
-  //   await FirebaseFirestore.instance.collectionGroup("songs").get().then((doc) {
-  //     // print(doc.docs[0].data());
-  //     // print(doc.docs.length);
+  Future<int> getLikes(String artistName, String songName) async {
+    int likes = 0;
+    await artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).get().then((snapshot) {
+      likes = snapshot.data()!["likes"];
+    });
 
-  //     // for (var i=0; i<doc.docs.length; i++) {
-  //     //   songArr.add(doc.docs[i].data());
-  //     // }
-  //     // print(songArr);
-  //     print(doc);
-  //     return doc;
-  //   });
-  //   // return songArr;
-  // }
+    return likes;
+  }
+
+  Future<List> getComments(String artistName, String songName) async {
+    List comments = [];
+    await artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).collection("comments").get().then((doc) {
+      comments = doc.docs;
+    });
+
+    return comments;
+  }
 }

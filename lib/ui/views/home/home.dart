@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:pep/services/database.dart';
-import 'package:pep/ui/shared/widgets/carousel_item.dart';
+import 'package:pep/ui/shared/widgets/song_item.dart';
 import 'package:pep/ui/shared/widgets/loading.dart';
 import 'package:pep/ui/views/admin/admin.dart';
 import 'package:pep/ui/views/profile/profile.dart';
@@ -34,72 +34,81 @@ class Home extends HookWidget {
             left: false,
             right: false,
             child: Scaffold(
-              body: Padding(
-                  padding: const EdgeInsets.fromLTRB(10.0, 0, 10.0, 0),
-                  child: ScrollConfiguration(
-                    behavior: const ScrollBehavior(),
-                    child: ListView(
-                      children: <Widget>[
-                        buildAppBarRow(context, snapshot),
-                        const SizedBox(height: 20.0),
-                        // buildBannerRow(context),
-                        // const SizedBox(height: 20.0),
+              body: ScrollConfiguration(
+                behavior: const ScrollBehavior(),
+                child: ListView(
+                  children: <Widget>[
+                    buildAppBarRow(context, snapshot),
+                    const SizedBox(height: 20.0),
+                    // buildBannerRow(context),
+                    // const SizedBox(height: 20.0),
 
-                        // Feed
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: const [
-                              Text("Your Feed", style:constants.ThemeText.secondaryTitleTextBlue),
-                            ],
-                          ),
+                    // Feed
+                  
+                    Center(
+                      child: ElevatedButton(
+                        style: TextButton.styleFrom(
+                          elevation: 0,
+                          backgroundColor: Colors.transparent
                         ),
-                        buildFeed(context, songArr),
-    
-                        // // Featured Row
-                        // Padding(
-                        //   padding: const EdgeInsets.only(top: 10),
-                        //   child: Row(
-                        //     children: [
-                        //       const Text("Featured", style:constants.ThemeText.secondaryTitleTextBlue),
-                        //       Padding(
-                        //         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.45),
-                        //         child: TextButton(
-                        //           onPressed: () {
-                        //             print("pressed");
-                        //           },
-                        //           child: const Text("more",
-                        //               style: constants.ThemeText.secondaryText),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // buildFeaturedRow(context),
-    
-                        // // Trending Row
-                        // Padding(
-                        //   padding: const EdgeInsets.only(top: 10),
-                        //   child: Row(
-                        //     children: [
-                        //       const Text("Trending Now",style: constants.ThemeText.secondaryTitleTextBlue),
-                        //       Padding(
-                        //         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.3),
-                        //         child: TextButton(
-                        //           onPressed: () {
-                        //             print("pressed");
-                        //           },
-                        //           child: const Text("more",
-                        //               style: constants.ThemeText.secondaryText),
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // buildFeaturedRow(context),
-                      ],
+                        onPressed: () {
+                          DatabaseService().getSongs().then((value) => songArr.value = value);
+                          // DatabaseService().getLikes("xxx", "Moonlight");
+                        },
+                        child: Row(
+                          children: [ 
+                            Icon(Icons.refresh, size: 30, color: constants.Colors.mainColor),
+                            Text("Your Feed", style:constants.ThemeText.secondaryTitleTextBlue),
+                          ],
+                        ),
+                      ),
                     ),
-                  )),
+                    buildFeed(context, songArr),
+    
+                    // // Featured Row
+                    // Padding(
+                    //   padding: const EdgeInsets.only(top: 10),
+                    //   child: Row(
+                    //     children: [
+                    //       const Text("Featured", style:constants.ThemeText.secondaryTitleTextBlue),
+                    //       Padding(
+                    //         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.45),
+                    //         child: TextButton(
+                    //           onPressed: () {
+                    //             print("pressed");
+                    //           },
+                    //           child: const Text("more",
+                    //               style: constants.ThemeText.secondaryText),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // buildFeaturedRow(context),
+    
+                    // // Trending Row
+                    // Padding(
+                    //   padding: const EdgeInsets.only(top: 10),
+                    //   child: Row(
+                    //     children: [
+                    //       const Text("Trending Now",style: constants.ThemeText.secondaryTitleTextBlue),
+                    //       Padding(
+                    //         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.3),
+                    //         child: TextButton(
+                    //           onPressed: () {
+                    //             print("pressed");
+                    //           },
+                    //           child: const Text("more",
+                    //               style: constants.ThemeText.secondaryText),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // buildFeaturedRow(context),
+                  ],
+                ),
+              ),
             ));
         }
         return Loading();
@@ -149,7 +158,7 @@ class Home extends HookWidget {
 
   buildBannerRow(BuildContext context) {
     return Container(
-        height: MediaQuery.of(context).size.height / 3.5,
+        height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: ScrollConfiguration(
           behavior: ScrollBehavior(),
@@ -175,8 +184,8 @@ class Home extends HookWidget {
   buildFeed(BuildContext context, ValueNotifier<List<dynamic>> songArr) {
     int _index = 0;
 
-    return Container(
-      height: MediaQuery.of(context).size.height / 2,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: PageView.builder(
         itemCount: songArr.value.length,

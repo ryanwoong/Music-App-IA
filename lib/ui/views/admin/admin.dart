@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:pep/models/song.dart';
+import 'package:pep/classes/songFile.dart';
+import 'package:pep/classes/songImage.dart';
 import 'package:pep/services/database.dart';
 import 'package:pep/services/file.dart';
 import 'package:pep/ui/shared/widgets/loading.dart';
@@ -52,6 +53,7 @@ class _AdminPageState extends State<AdminPage> {
                 padding: const EdgeInsets.all(10.0),
                 child: Row(
                   children: [
+                    // Drop down menu
                     const Text(
                       "Select:",
                       style: constants.ThemeText.smallText,
@@ -120,6 +122,7 @@ class _AdminPageState extends State<AdminPage> {
                               ),
                             ),
                             const SizedBox(height: 20.0),
+                            // Song name section
                             Padding(
                               padding: const EdgeInsets.only(left: 20.0),
                               child: Row(
@@ -148,6 +151,7 @@ class _AdminPageState extends State<AdminPage> {
                               ),
                             ),
                             const SizedBox(height: 20.0),
+                            // Artist name section
                             Padding(
                               padding: const EdgeInsets.only(left: 20.0),
                               child: Row(
@@ -176,6 +180,7 @@ class _AdminPageState extends State<AdminPage> {
                               ),
                             ),
                             const SizedBox(height: 20.0),
+                            // Select audio file section
                             Padding(
                               padding: const EdgeInsets.only(left: 5.0),
                               child: Row(
@@ -197,7 +202,8 @@ class _AdminPageState extends State<AdminPage> {
                                           result.getStatusMessage();
                                       setState(() {
                                         if (_statusMessage == "File OK") {
-                                          _errorColor = constants.Colors.success;
+                                          _errorColor =
+                                              constants.Colors.success;
                                         } else {
                                           _errorColor = constants.Colors.error;
                                         }
@@ -209,6 +215,7 @@ class _AdminPageState extends State<AdminPage> {
                                 ],
                               ),
                             ),
+                            // File name
                             Padding(
                               padding: const EdgeInsets.only(left: 20.0),
                               child: Row(
@@ -224,6 +231,7 @@ class _AdminPageState extends State<AdminPage> {
                               ),
                             ),
                             const SizedBox(height: 20.0),
+                            // Select image file section
                             Padding(
                               padding: const EdgeInsets.only(left: 5.0),
                               child: Row(
@@ -241,10 +249,12 @@ class _AdminPageState extends State<AdminPage> {
                                           await FileService().pickImageFile();
                                       // print("FILE: ${result.getSongFile()}");
                                       // print("MESSAGE: ${result.getStatusMessage()}");
-                                      String? _statusMessage = result.getStatusMessage();
+                                      String? _statusMessage =
+                                          result.getStatusMessage();
                                       setState(() {
                                         if (_statusMessage == "File OK") {
-                                          _errorColor = constants.Colors.success;
+                                          _errorColor =
+                                              constants.Colors.success;
                                         } else {
                                           _errorColor = constants.Colors.error;
                                         }
@@ -256,6 +266,7 @@ class _AdminPageState extends State<AdminPage> {
                                 ],
                               ),
                             ),
+                            // File name
                             Padding(
                               padding: const EdgeInsets.only(left: 20.0),
                               child: Row(
@@ -271,56 +282,66 @@ class _AdminPageState extends State<AdminPage> {
                               ),
                             ),
                             const SizedBox(height: 20.0),
+                            // Add song button
                             Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    height: 45.0,
-                                    width: 120.0,
-                                    child: TextButton(
-                                      style: constants.Button.textButton,
-                                      child: const Text(
-                                        "Add Song",
-                                        style: TextStyle(color: Colors.white),
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 45.0,
+                                      width: 120.0,
+                                      child: TextButton(
+                                        style: constants.Button.textButton,
+                                        child: const Text(
+                                          "Add Song",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        onPressed: () async {
+                                          await DatabaseService().saveSong(
+                                              _songFile,
+                                              _songImage,
+                                              _songNameController.text,
+                                              _songArtistController.text);
+                                          Navigator.pop(context);
+                                        },
                                       ),
-                                      onPressed: () {
-                                        DatabaseService().saveSong(
-                                            _songFile,
-                                            _songImage,
-                                            _songNameController.text,
-                                            _songArtistController.text);
-                                      },
                                     ),
-                                  ),
-                                ],
-                              )
-                            ),
+                                  ],
+                                )),
+
+                            // DELETE BEFORE FINAL
                             Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    height: 45.0,
-                                    width: 120.0,
-                                    child: TextButton(
-                                      style: constants.Button.textButton,
-                                      child: const Text(
-                                        "click",
-                                        style: TextStyle(color: Colors.white),
+                                padding: const EdgeInsets.only(left: 20.0),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 45.0,
+                                      width: 120.0,
+                                      child: TextButton(
+                                        style: constants.Button.textButton,
+                                        child: const Text(
+                                          "click",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        onPressed: () async {
+                                          FirebaseFirestore.instance
+                                              .collection("artists")
+                                              .doc("justin")
+                                              .collection("songs")
+                                              .doc("Tester")
+                                              .get()
+                                              .then((val) {
+                                            print(val["artists"]);
+                                          });
+                                          // DatabaseService().getLikes("Justin", "Tester");
+                                          // Future<List<Reference>?> items = DatabaseService().getSongImg("Jeremy", "Summer");
+                                          // DatabaseService().getRanArtist();
+                                          // DatabaseService().getAllSongs();
+                                        },
                                       ),
-                                      onPressed: () async {
-                                        // Future<List<Reference>?> items = DatabaseService().getSongImg("Jeremy", "Summer");
-                                        // DatabaseService().getRanArtist();
-                                        // DatabaseService().getAllSongs();
-                                       
-                                       
-                                      },
                                     ),
-                                  ),
-                                ],
-                              )
-                            ),
+                                  ],
+                                )),
                           ],
                         )
                       : buildRemoveSong(context))

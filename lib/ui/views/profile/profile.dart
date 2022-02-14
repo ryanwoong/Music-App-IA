@@ -20,71 +20,72 @@ class _ProfileState extends State<Profile> {
     var _currentUser = FirebaseAuth.instance.currentUser!;
 
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: DatabaseService(uid: _currentUser.uid).userData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.active) {
-            return SafeArea(
-              child: Scaffold(
-                appBar: AppBar(
-                  elevation: 0,
-                  backgroundColor: constants.Colors.mainColor,
-                ),
-                body: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Row(
-                        children: const [
-                          Text(
-                            "Your Profile",
-                            style: constants.ThemeText.titleTextBlue,
-                          )
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Row(
-                        children: const [
-                          Text(
-                            "Email",
-                            style: constants.ThemeText.secondaryTitleTextBlue,
-                          )
-                        ],
-                      ),
-                    ),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          textStyle: const TextStyle(fontSize: 20),
-                          backgroundColor: Colors.black),
-                      onPressed: () {
-                        authService.signOut();
-                        Navigator.pop(context);
-                      },
-                      child: const Text('sign out'),
-                    ),
-                  ],
-                ),
-                // body: Column(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: [
-                //     Text("${snapshot.data!["email"]}"),
-                //     TextButton(
-                //       style: TextButton.styleFrom(
-                //           textStyle: const TextStyle(fontSize: 20),
-                //           backgroundColor: Colors.black),
-                //       onPressed: () {
-                //         authService.signOut();
-                //         Navigator.pop(context);
-                //       },
-                //       child: const Text('sign out'),
-                //     ),
-                //   ],
-                // ),
+      stream: DatabaseService(uid: _currentUser.uid).userData,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          return SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                elevation: 0,
+                backgroundColor: constants.Colors.mainColor,
               ),
-            );
-          }
-          return Loading();
-        });
+              body: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      children: const [
+                        Text(
+                          "Your Profile",
+                          style: constants.ThemeText.titleTextBlue,
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      children: const [
+                        Text(
+                          "Email",
+                          style: constants.ThemeText.secondaryTitleTextBlue,
+                        )
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                        textStyle: const TextStyle(fontSize: 20),
+                        backgroundColor: Colors.black),
+                    onPressed: () {
+                      authService.signOut();
+                      Navigator.pop(context);
+                    },
+                    child: const Text('sign out'),
+                  ),
+                ],
+              ),
+              // body: Column(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     Text("${snapshot.data!["email"]}"),
+              //     TextButton(
+              //       style: TextButton.styleFrom(
+              //           textStyle: const TextStyle(fontSize: 20),
+              //           backgroundColor: Colors.black),
+              //       onPressed: () {
+              //         authService.signOut();
+              //         Navigator.pop(context);
+              //       },
+              //       child: const Text('sign out'),
+              //     ),
+              //   ],
+              // ),
+            ),
+          );
+        }
+        return const Loading();
+      }
+    );
   }
 }
