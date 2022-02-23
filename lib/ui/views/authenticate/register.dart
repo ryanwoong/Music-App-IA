@@ -34,29 +34,6 @@ class _RegisterState extends State<Register> {
     super.dispose();
   }
 
-  // void _submit () {
-  //   final usernameText = _usernameController.value.text;
-  //   bool checkUsername = DatabaseService().findUsername(usernameText);
-
-  //   if (usernameText.isEmpty) {
-  //     setState(() {
-  //       _error = "Enter a username";
-  //     });
-  //   } else if (!RegExp(r"^(?!.*___|\.|.*\.$|.*\.\.)[a-zA-Z1-9_.]{3,20}$").hasMatch(usernameText)) {
-  //     setState(() {
-  //       _error = "Ensure your username does not:\n\nStart or end in a period\n2+ underscores in a row\nInclude any special characters";
-  //     });
-  //   } else if (checkUsername) {
-  //     setState(() {
-  //       _error = "Username already exists";
-  //     });
-  //   } else {
-  //     setState(() {
-  //       _error = "";
-  //     });
-  //   }
-  // }
-
   Future<dynamic> validateUsername(String value) async {
     _usernameValidationMessage = null;
     bool checkUsername = await DatabaseService().findUsername(value);
@@ -192,7 +169,6 @@ class _RegisterState extends State<Register> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // TODO submit
                             try {
                               await authService.register(
                                   _usernameController.text.trim(),
@@ -209,14 +185,6 @@ class _RegisterState extends State<Register> {
                               });
                             }
                           }
-                          // try {
-                          //   await authService.register(_usernameController.text.trim(), _emailController.text.trim(), _passwordController.text.trim());
-                          //   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> Wrapper()), (_) => false );
-                          // } catch (e) {
-                          //   setState(() {
-                          //     _error = "Please supply a valid email";
-                          //   });
-                          // }
                         },
                       ),
                     )),

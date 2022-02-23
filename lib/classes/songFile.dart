@@ -13,10 +13,5 @@ class SongFile {
     return statusMessage;
   }
 
-  String? getSongBrief() {
-    // String _songName = "${songFile!.name}"
-    return songFile!.name;
-  }
-
-  
 }
+

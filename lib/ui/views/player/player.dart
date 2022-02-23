@@ -1,6 +1,7 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pep/models/comment.dart';
 import 'package:pep/services/database.dart';
 import 'package:pep/ui/shared/widgets/loading.dart';
 import 'package:pep/ui/views/player/player_manager.dart';
@@ -25,7 +26,6 @@ class Player extends StatefulWidget {
 
 class _PlayerState extends State<Player> {
   late final PageManager _pageManager;
-  late int likes = 0;
 
   final TextEditingController _commentController = TextEditingController();
 
@@ -40,14 +40,6 @@ class _PlayerState extends State<Player> {
   @override
   void initState() {
     super.initState();
-    // likes = 3;
-    // WidgetsBinding.instance?.addPostFrameCallback((_) {
-    //   DatabaseService().getLikes(widget.artist, widget.songName);
-    // });
-    DatabaseService().getLikes(widget.artist, widget.songName).then((value)  {
-      likes = value;
-      setState(() {});
-    });
     _pageManager = PageManager(widget.songFileLink);
     
   }
@@ -55,13 +47,13 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
 
-    // Future<int> likes = await DatabaseService().getLikes(widget.artist, widget.songName);
 
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         backgroundColor: constants.Colors.mainColor,
       ),
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         left: false,
         right: false,
@@ -81,186 +73,109 @@ class _PlayerState extends State<Player> {
                 ],
               ),
               Row(
-                children: [
-                  Text("${likes}", style: constants.ThemeText.secondaryText),
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.only(top: 15.0),
+                    child: Text("Comments", style: constants.ThemeText.smallText)
+                  )
                 ],
               ),
+              // Row(
+              //   children: [
+              //     Text("${likes}", style: constants.ThemeText.secondaryText),
+              //   ],
+              // ),
               // put song comments here
               Row(
                 children: [
-                  FutureBuilder(
-                    future: FirebaseFirestore.instance.collection("artists").doc(widget.artist.toLowerCase()).collection("songs").doc(widget.songName).collection("comments").get(),
-                    builder: (_, AsyncSnapshot snapshot) {
-           
-                       return Container(
-                          child: Column(
-                            children: [
-                              Text(snapshot.hasData ? "" : "No comments."),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 0.0),
-                                child: Row(
-                                  children: [
-                                    FutureBuilder(
-                                      future: DatabaseService().getComments(widget.artist, widget.songName),
-                                      builder: (context, snapshot) {
-                                        switch (snapshot.connectionState) {
-                                          case ConnectionState.waiting:
-                                            return Loading();
-                                          default:
-                                            if (snapshot.hasError) {
-                                              return Text('Error: ${snapshot.error}');
-                                            }
-                                            else {
-                                              print(snapshot.data);
-                                              return Text("${snapshot.data}");
-                                              // return SizedBox(
-                                              //   height: 450,
-                                              //   width: 400,
-                                              //   child: ListView.builder(
-                                              //     itemCount: 20,
-                                              //     itemBuilder: (context, index) {
-                                              //       print(snapshot.data);
-                                              //       return ListTile(
-                                              //         leading: Icon(Icons.list),
-                                              //         title: Text("test")
-                                              //       );
-                                              //     }
-                                              //   ),
-                                              // );
-                                            }
-                                              
-                                        }
-                                      },
-                                    ),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 0.0),
+                        child: Row(
+                          children: [
+                            FutureBuilder<List<CommentModel>>(
+                              future: DatabaseService().getComments(widget.artist, widget.songName),
+                              builder: (context, snap) {
+                                switch (snap.connectionState) {
+                                  case ConnectionState.waiting:
+                                    return const Loading();
+                                  default:
+                                    if (snap.hasError) {
+                                      return Text('Error: ${snap.error}');
+                                    }
+                                    else {
+                                      return Column(
+                                        children: [
+                                          SizedBox(
+                                            height: 290,
+                                            width: MediaQuery.of(context).size.height * 0.42,
+                                            child: ScrollConfiguration(
+                                              behavior: const ScrollBehavior(),
+                                              child: ListView.builder(
+                                                itemCount: snap.data!.length,
+                                                itemBuilder: (context, index) {
+                                                  return ListTile(
+                                                    leading: const Icon(Icons.person),
+                                                    title: Text("${snap.data![index].author}"),
+                                                    subtitle: Text("${snap.data![index].comment}"),
+                                                  );
+                                                }
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: MediaQuery.of(context).size.width * 0.9,
+                                            height: MediaQuery.of(context).size.width * 0.4,
+                                            child: Focus(
+                                              child: TextFormField(
+                                                maxLines: 3,
+                                                maxLength: 100,
+                                                controller: _commentController,
+                                                style: const TextStyle(
+                                                  fontSize: 15
+                                                ),
+                                                decoration: InputDecoration(
+                                                  floatingLabelBehavior: FloatingLabelBehavior.never,
+                                                  labelText: "Type your comment here",
+                                                  filled: true,
+                                                  fillColor: constants.Colors.lightGrey,
+                                                  border: OutlineInputBorder(
+                                                      borderSide: BorderSide.none,
+                                                      borderRadius: BorderRadius.circular(20.0)),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
 
-                                    // SizedBox(
-                                    //   width: MediaQuery.of(context).size.width * 0.9,
-                                    //   height: MediaQuery.of(context).size.width * 0.4,
-                                    //   child: Focus(
-                                    //     child: TextFormField(
-                                    //       maxLines: 3,
-                                    //       maxLength: 100,
-                                    //       controller: _commentController,
-                                    //       style: const TextStyle(
-                                    //         fontSize: 15
-                                    //       ),
-                                    //       decoration: InputDecoration(
-                                    //         floatingLabelBehavior: FloatingLabelBehavior.never,
-                                    //         labelText: "Artist",
-                                    //         filled: true,
-                                    //         fillColor: constants.Colors.lightGrey,
-                                    //         border: OutlineInputBorder(
-                                    //             borderSide: BorderSide.none,
-                                    //             borderRadius: BorderRadius.circular(20.0)),
-                                    //       ),
-                                    //     ),
-                                    //   ),
-                                    // ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                              padding: const EdgeInsets.only(left: 20.0),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    height: 45.0,
-                                    width: 120.0,
-                                    child: TextButton(
-                                      style: constants.Button.textButton,
-                                      child: const Text(
-                                        "Add Song",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      onPressed: () async {
-                                        DatabaseService().addComment(widget.artist, widget.songName, _commentController.text);
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              )
+                                          Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 45.0,
+                                                width: 120.0,
+                                                child: TextButton(
+                                                  style: constants.Button.textButton,
+                                                  child: const Text(
+                                                    "Comment",
+                                                    style: TextStyle(color: Colors.white),
+                                                  ),
+                                                  onPressed: () async {
+                                                    DatabaseService().addComment(widget.artist, widget.songName, _commentController.text);
+                                                  },
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ]
+                                      );
+                                    }
+                                }
+                              },
                             ),
-                            ],
-                          ),
-                        );
-                      // if (snapshot.hasData) {
-                      //   return Container(
-                      //     width: 250,
-                      //     height: 400,
-                      //     child: ListView.builder(
-                      //       itemCount: 10,
-                      //       itemBuilder: (context, index) {
-                      //         // print("TEST ${snapshot.data["comments"]}");
-                      //         // return Text("${snapshot.data["comments"]}");
-                      //        return 
-                      //       },
-                      //     ),
-                      //   );
-                      // }
-                      // if (snapshot.hasError) {
-                      //   print('SNAPSHOT ERROR: ${snapshot.error}');
-                      //   return Text('${snapshot.error}');
-                      // } else {
-                      //   return Container(
-                      //     child: Column(
-                      //       children: [
-                      //         const Text("There are no comments, be the first one!"),
-                      //         Padding(
-                      //           padding: const EdgeInsets.only(left: 0.0),
-                      //           child: Row(
-                      //             children: [
-                      //               SizedBox(
-                      //                 width: MediaQuery.of(context).size.width * 0.9,
-                      //                 height: MediaQuery.of(context).size.width * 0.4,
-                      //                 child: Focus(
-                      //                   child: TextFormField(
-                      //                     maxLines: 3,
-                      //                     maxLength: 100,
-                      //                     controller: _commentController,
-                      //                     style: const TextStyle(
-                      //                       fontSize: 15
-                      //                     ),
-                      //                     decoration: InputDecoration(
-                      //                       floatingLabelBehavior: FloatingLabelBehavior.never,
-                      //                       labelText: "Artist",
-                      //                       filled: true,
-                      //                       fillColor: constants.Colors.lightGrey,
-                      //                       border: OutlineInputBorder(
-                      //                           borderSide: BorderSide.none,
-                      //                           borderRadius: BorderRadius.circular(20.0)),
-                      //                     ),
-                      //                   ),
-                      //                 ),
-                      //               ),
-                      //             ],
-                      //           ),
-                      //         ),
-                      //         Padding(
-                      //         padding: const EdgeInsets.only(left: 20.0),
-                      //         child: Row(
-                      //           children: [
-                      //             SizedBox(
-                      //               height: 45.0,
-                      //               width: 120.0,
-                      //               child: TextButton(
-                      //                 style: constants.Button.textButton,
-                      //                 child: const Text(
-                      //                   "Add Song",
-                      //                   style: TextStyle(color: Colors.white),
-                      //                 ),
-                      //                 onPressed: () async {
-                      //                   DatabaseService().addComment(widget.artist, widget.songName, _commentController.text);
-                      //                 },
-                      //               ),
-                      //             ),
-                      //           ],
-                      //         )
-                      //       ),
-                      //       ],
-                      //     ),
-                      //   );
-                      }
-                    // },
+                          ],
+                        ),
+                      ),
+                    ],
                   )
                 ],
               ),
