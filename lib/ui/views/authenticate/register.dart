@@ -140,6 +140,7 @@ class _RegisterState extends State<Register> {
                   width: MediaQuery.of(context).size.width * 0.7,
                   child: TextField(
                     controller: _passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.never,
                       labelText: "Password",

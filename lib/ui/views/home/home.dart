@@ -90,7 +90,7 @@ class Home extends HookWidget {
                       iconSize: 30.0,
                       color: constants.Colors.darkGrey,
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AdminPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const AdminPage()));
                       },
                     ),
                     IconButton(
@@ -98,7 +98,7 @@ class Home extends HookWidget {
                       iconSize: 30.0,
                       color: constants.Colors.darkGrey,
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Profile()));
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const Profile()));
                       },
                     ),
                   ],
@@ -108,30 +108,6 @@ class Home extends HookWidget {
           ),
         ));
   }
-
-  // buildBannerRow(BuildContext context) {
-  //   return Container(
-  //       height: MediaQuery.of(context).size.height,
-  //       width: MediaQuery.of(context).size.width,
-  //       child: ScrollConfiguration(
-  //         behavior: const ScrollBehavior(),
-  //         child: ListView.builder(
-  //           primary: false,
-  //           shrinkWrap: true,
-  //           scrollDirection: Axis.horizontal,
-  //           itemCount: ads == null ? 0 : ads.length,
-  //           itemBuilder: (BuildContext context, int index) {
-
-  //             return Container();
-  //             // return Padding(
-  //             //   padding: const EdgeInsets.only(right: 10.0),
-  //             //   child: BannerItem(
-  //             //       title: ad["item"], desc: ad["desc"], img: ad["img"]),
-  //             // );
-  //           },
-  //         ),
-  //       ));
-  // }
 
   buildFeed(BuildContext context, ValueNotifier<List<dynamic>> songArr) {
     int _index = 0;

@@ -82,6 +82,7 @@ class _LoginState extends State<Login> {
                   width: MediaQuery.of(context).size.width * 0.7,
                   child: TextField(
                     controller: _passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.never,
                       labelText: "Password",

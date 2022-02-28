@@ -16,3 +16,4 @@ class SongFiles {
   SongFiles({ this.songFile, this.imageFile });
 
 }
+

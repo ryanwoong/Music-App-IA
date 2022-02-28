@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:pep/classes/songFile.dart';
 import 'package:pep/classes/songImage.dart';
@@ -76,7 +74,7 @@ class _AdminPageState extends State<AdminPage> {
                             _currentValue = newValue!;
                           });
                         },
-                        items: <String>["Add Song", "Remove Song"]
+                        items: <String>["Add Song", ""]
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -290,48 +288,14 @@ class _AdminPageState extends State<AdminPage> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         onPressed: () async {
+                                          int count = 0;
+                                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Loading()));
                                           await DatabaseService().saveSong(
                                               _songFile,
                                               _songImage,
                                               _songNameController.text,
                                               _songArtistController.text);
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                )),
-
-                            // DELETE BEFORE FINAL
-                            Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      height: 45.0,
-                                      width: 120.0,
-                                      child: TextButton(
-                                        style: constants.Button.textButton,
-                                        child: const Text(
-                                          "click",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        onPressed: () async {
-
-                                          DatabaseService().getUsername("U20Iqj8BLXdiTVhe2DFEoutJM8j2");
-                                          // FirebaseFirestore.instance
-                                          //     .collection("artists")
-                                          //     .doc("justin")
-                                          //     .collection("songs")
-                                          //     .doc("Tester")
-                                          //     .get()
-                                          //     .then((val) {
-                                          //   print(val["artists"]);
-                                          // });
-                                          // DatabaseService().getLikes("Justin", "Tester");
-                                          // Future<List<Reference>?> items = DatabaseService().getSongImg("Jeremy", "Summer");
-                                          // DatabaseService().getRanArtist();
-                                          // DatabaseService().getAllSongs();
+                                          Navigator.of(context).popUntil((_) => count++ >= 2);
                                         },
                                       ),
                                     ),
@@ -339,7 +303,7 @@ class _AdminPageState extends State<AdminPage> {
                                 )),
                           ],
                         )
-                      : buildRemoveSong(context))
+                      : Container())
             ],
           ),
         ),
@@ -347,60 +311,3 @@ class _AdminPageState extends State<AdminPage> {
     );
   }
 }
-
-// buildAddSong(BuildContext context, error) {
-//   final TextEditingController _songTitleController = TextEditingController();
-//   var result;
-
-//   return Container(
-//     child: Column(
-//       children: <Widget>[
-//         Padding(
-//           padding: const EdgeInsets.only(left: 20.0),
-//           child: Row(
-//             children: const <Widget>[
-//               Text("Add Song", style: constants.ThemeText.titleText),
-//             ],
-//           ),
-//         ),
-//         const SizedBox(height: 20.0),
-//         IconButton(
-//             icon: Icon(Icons.search),
-//             onPressed: () async {error = await FileService().pickFile();
-//               print(error);
-//               // final results = showSearch(context: context, delegate: SongSearch());
-//               // print("Result: ${results.toString()}");
-//             }),
-//         // SizedBox(
-//         //   width: MediaQuery.of(context).size.width * 0.85,
-//         //   child: Padding(
-//         //     padding: const EdgeInsets.only(left: 10.0),
-//         //     child: TextField(
-//         //       controller: _songTitleController,
-//         //       decoration: InputDecoration(
-//         //         floatingLabelBehavior: FloatingLabelBehavior.never,
-//         //         labelText: "Song Title",
-//         //         filled: true,
-//         //         fillColor: constants.Colors.lightGrey,
-//         //         border: OutlineInputBorder(
-//         //           borderSide: BorderSide.none,
-//         //           borderRadius: BorderRadius.circular(20.0)
-//         //         ),
-//         //       ),
-//         //       onTap: () {
-//         //         showSearch(context: context, delegate: SongSearch());
-//         //       },
-//         //     ),
-//         //   ),
-//         // ),
-//       ],
-//     ),
-//   );
-// }
-
-buildRemoveSong(BuildContext context) {
-  return Container(
-    child: Text("REMVOE"),
-  );
-}
-

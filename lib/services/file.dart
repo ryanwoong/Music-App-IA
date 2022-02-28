@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:pep/classes/songImage.dart';
 import 'package:pep/classes/songFile.dart';
 import 'package:file_picker/file_picker.dart';
@@ -15,17 +14,10 @@ class FileService {
     if (result != null) {
       PlatformFile file = result.files.first;
       if (file.extension == "mp3" || file.extension == "wav") {
-        print(file.name);
-        print(file.bytes);
-        print(file.size);
-        print(file.extension);
-        print(file.path);
-        print(file.runtimeType);
         return SongFile(statusMessage: "File OK", songFile: file);
         
       } else {
         return SongFile(statusMessage: "Please select a .mp3 or .wav file", songFile: null);
-        // print("Please select a .mp3 or .wav file");
       }
     } else {
       // User exited
@@ -43,17 +35,10 @@ class FileService {
     if (result != null) {
       PlatformFile file = result.files.first;
       if (file.extension == "png" || file.extension == "jpg") {
-        print(file.name);
-        print(file.bytes);
-        print(file.size);
-        print(file.extension);
-        print(file.path);
-        print(file.runtimeType);
         return SongImage(statusMessage: "File OK", songImage: file);
         
       } else {
         return SongImage(statusMessage: "Please select a .png or .jpg file", songImage: null);
-        // print("Please select a .mp3 or .wav file");
       }
     } else {
       // User exited

@@ -1,5 +1,4 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pep/models/comment.dart';
 import 'package:pep/services/database.dart';
@@ -12,12 +11,16 @@ class Player extends StatefulWidget {
   final String songName;
   final String artist;
   final String songFileLink;
-
+  final List upvotes;
+  final List downvotes;
+  
   const Player({
     Key? key, 
     required this.songName, 
     required this.artist, 
     required this.songFileLink,
+    required this.upvotes,
+    required this.downvotes
     }) : super(key: key);
 
   @override
@@ -47,7 +50,6 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
 
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -64,6 +66,27 @@ class _PlayerState extends State<Player> {
               Row(
                 children: [
                   Text("${widget.songName}", style: constants.ThemeText.titleTextBlack),
+                  Container(
+                    padding: const EdgeInsets.only(left: 90),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          onPressed: () async {
+                            DatabaseService().upvote(widget.artist, widget.songName);
+                            Navigator.pop(context);
+                          }, 
+                          icon: const Icon(Icons.arrow_upward_rounded),
+                        ),
+                        Text(widget.upvotes.length.toString(), style: constants.ThemeText.secondaryTitleTextBlack,),
+                        IconButton(
+                          onPressed: () {
+                            DatabaseService().downvote(widget.artist, widget.songName);
+                          }, 
+                          icon: const Icon(Icons.arrow_downward_rounded)
+                        ),
+                      ],
+                    )
+                  )
                 ],
               ),
               const SizedBox(height: 5.0),
@@ -80,12 +103,6 @@ class _PlayerState extends State<Player> {
                   )
                 ],
               ),
-              // Row(
-              //   children: [
-              //     Text("${likes}", style: constants.ThemeText.secondaryText),
-              //   ],
-              // ),
-              // put song comments here
               Row(
                 children: [
                   Column(
@@ -94,7 +111,7 @@ class _PlayerState extends State<Player> {
                         padding: const EdgeInsets.only(left: 0.0),
                         child: Row(
                           children: [
-                            FutureBuilder<List<CommentModel>>(
+                            FutureBuilder<List<Comment>>(
                               future: DatabaseService().getComments(widget.artist, widget.songName),
                               builder: (context, snap) {
                                 switch (snap.connectionState) {
@@ -112,15 +129,18 @@ class _PlayerState extends State<Player> {
                                             width: MediaQuery.of(context).size.height * 0.42,
                                             child: ScrollConfiguration(
                                               behavior: const ScrollBehavior(),
-                                              child: ListView.builder(
-                                                itemCount: snap.data!.length,
-                                                itemBuilder: (context, index) {
-                                                  return ListTile(
-                                                    leading: const Icon(Icons.person),
-                                                    title: Text("${snap.data![index].author}"),
-                                                    subtitle: Text("${snap.data![index].comment}"),
-                                                  );
-                                                }
+                                              child: Scrollbar(
+                                                isAlwaysShown: true,
+                                                child: ListView.builder(
+                                                  itemCount: snap.data!.length,
+                                                  itemBuilder: (context, index) {
+                                                    return ListTile(
+                                                      leading: const Icon(Icons.person),
+                                                      title: Text("${snap.data![index].author}"),
+                                                      subtitle: Text("${snap.data![index].comment}"),
+                                                    );
+                                                  }
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -161,6 +181,7 @@ class _PlayerState extends State<Player> {
                                                   ),
                                                   onPressed: () async {
                                                     DatabaseService().addComment(widget.artist, widget.songName, _commentController.text);
+                                                    Navigator.pop(context);
                                                   },
                                                 ),
                                               ),
