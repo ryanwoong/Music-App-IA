@@ -56,15 +56,6 @@ abstract class Colors {
 }
 
 abstract class Button {
-  // static final textButton = TextButton.styleFrom(
-  //   elevation: 0,
-  //   splashFactory: NoSplash.splashFactory,
-  //   primary: Colors.mainColor,
-  //   shape: const RoundedRectangleBorder(
-  //     borderRadius: BorderRadius.all(Radius.circular(10.0)),
-  //   ),
-  //   fixedSize: const Size(195, 45)
-  // );
   static final textButton = TextButton.styleFrom(
     splashFactory: NoSplash.splashFactory,
     backgroundColor: Colors.mainColor,

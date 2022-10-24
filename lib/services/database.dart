@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:pep/models/comment.dart';
+
 
 class DatabaseService {
   final String? uid;
@@ -12,7 +14,6 @@ class DatabaseService {
 
   CollectionReference users = FirebaseFirestore.instance.collection("users");
   CollectionReference artistCollection = FirebaseFirestore.instance.collection("artists");
-  // final _firestore = FirebaseFirestore.instance;
 
   Stream<DocumentSnapshot<Map<String, dynamic>>> get userData {
     var _currentUser = FirebaseAuth.instance.currentUser!;
@@ -25,6 +26,52 @@ class DatabaseService {
   Stream<QuerySnapshot<Map<String, dynamic>>> get artists {
     return FirebaseFirestore.instance.collection("artists").where("isArtist", isEqualTo: true).snapshots();
     
+  }
+
+  Future<void> upvote(String artistName, String songName) async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+    final uid = user?.uid;
+
+    await artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).get().then((doc) {
+      List upvotes = doc["upvotes"];
+      List downvotes = doc["downvotes"];
+
+      // If user already has upvoted this song
+      if (upvotes.contains(uid)) {
+        return;
+      // If user has downvoted, then delete and add upvote
+      } if (downvotes.contains(uid)) {
+        artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).update({"downvotes": FieldValue.arrayRemove([uid]) });
+        artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).update({"upvotes": FieldValue.arrayUnion([uid]) });
+      // If none of above conditions are true then just add upvote
+      } else {
+        artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).update({"upvotes": FieldValue.arrayUnion([uid]) });
+      }
+    });
+  }
+
+  Future<void> downvote(String artistName, String songName) async {
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+    final uid = user?.uid;
+    
+    await artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).get().then((doc) {
+      List upvotes = doc["upvotes"];
+      List downvotes = doc["downvotes"];
+
+      // If user already has downvoted this song
+      if (downvotes.contains(uid)) {
+        return;
+      // If user has upvoted, then delete and add downvote
+      } if (upvotes.contains(uid)) {
+        artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).update({"upvotes": FieldValue.arrayRemove([uid]) });
+        artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).update({"downvotes": FieldValue.arrayUnion([uid]) });
+      // If none of above conditions are true then just add upvote
+      } else {
+        artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).update({"downvotes": FieldValue.arrayUnion([uid]) });
+      }
+    });
   }
 
   Future<void> addUser(String uid, String username, String email) {
@@ -46,13 +93,14 @@ class DatabaseService {
     await artistCollection.doc(artistName.toLowerCase()).set({ "isArtist": true });
   }
 
-  void addComment(String artistName, String songName, String comment) {
+  void addComment(String artistName, String songName, String comment) async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User? user = auth.currentUser;
     final uid = user?.uid;
-
+    String? username;
+    await getUsername(uid).then((val) => username = val);
     artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).collection("comments").add({
-      "author": uid,
+      "author": username,
       "comment": comment
     });
   }
@@ -73,11 +121,12 @@ class DatabaseService {
       },
     );
 
-    // Try to create the new files, saving the audio and imgage file
+    // Try to create the new files, saving the audio and image file
     // Also add the information into database as documents
     try {
       await addArtist(artistName);
-      await storage.ref("${directory}/${songName}/${songName}").putFile(_songFile, metadata).then((_) =>  storage.ref("${directory}/${songName}/${songName}-Image").putFile(_songImage, metadata));
+      await storage.ref("${directory}/${songName}/${songName}").putFile(_songFile, metadata).then((_) =>  storage.ref("${directory}/${songName}/${songName}-Image")
+      .putFile(_songImage, metadata));
       await artistCollection
         .doc(directory)
         .collection("songs")
@@ -85,14 +134,13 @@ class DatabaseService {
         .set({
           "songName": songName,
           "artists": artistName,
-          "likes": 0,
+          "upvotes": [],
+          "downvotes": []
         })
         .then((value) {
-          // print("Song Added");
-        })
-        .catchError((error) => print("Failed to add song: $error"));
+        });
     } on FirebaseException catch (e) {
-      // print(e);
+      return;
     }
   }
 
@@ -108,6 +156,14 @@ class DatabaseService {
     return results.docs.isEmpty;
   }
 
+  Future<String> getUsername (String? uid) async {
+    String username = "";
+    await users.doc(uid).get().then((doc) => {
+      username = doc["username"]
+    });
+    return username;
+  }
+
   Future<List<Reference>?> getSongImg(String artist, String songName) async {
     FirebaseStorage _storage = FirebaseStorage.instance;
     try {
@@ -119,7 +175,6 @@ class DatabaseService {
     } catch (e) {
       print(e);
     }
-
   }
 
   Future<List> getSongs() async {
@@ -142,10 +197,12 @@ class DatabaseService {
     return likes;
   }
 
-  Future<List> getComments(String artistName, String songName) async {
-    List comments = [];
+  Future<List<Comment>> getComments(String artistName, String songName) async {
+    List<Comment> comments = [];
     await artistCollection.doc(artistName.toLowerCase()).collection("songs").doc(songName).collection("comments").get().then((doc) {
-      comments = doc.docs;
+      for (var i=0; i<doc.docs.length; i++) {
+        comments.add(Comment(author: doc.docs[i].data()["author"], comment: doc.docs[i].data()["comment"]));
+      }
     });
 
     return comments;

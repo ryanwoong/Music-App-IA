@@ -8,20 +8,17 @@ import 'package:pep/ui/shared/widgets/loading.dart';
 import 'package:pep/ui/views/admin/admin.dart';
 import 'package:pep/ui/views/profile/profile.dart';
 import '../../shared/utils/constants.dart' as constants;
-import '../../shared/utils/ads.dart';
 
 class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var _currentUser = FirebaseAuth.instance.currentUser!;
-    // var songArr;
     var songArr = useState([]);
 
     useEffect(() {
       DatabaseService().getSongs().then((value) {
-        print("test $value ");
+        value.shuffle();
         songArr.value = value;
-        // print(value);
       });
 
     }, []);
@@ -40,11 +37,7 @@ class Home extends HookWidget {
                   children: <Widget>[
                     buildAppBarRow(context, snapshot),
                     const SizedBox(height: 20.0),
-                    // buildBannerRow(context),
-                    // const SizedBox(height: 20.0),
-
                     // Feed
-                  
                     Center(
                       child: ElevatedButton(
                         style: TextButton.styleFrom(
@@ -52,11 +45,13 @@ class Home extends HookWidget {
                           backgroundColor: Colors.transparent
                         ),
                         onPressed: () {
-                          DatabaseService().getSongs().then((value) => songArr.value = value);
-                          // DatabaseService().getLikes("xxx", "Moonlight");
+                          DatabaseService().getSongs().then((value) {
+                            value.shuffle();
+                            songArr.value = value;
+                          });
                         },
                         child: Row(
-                          children: [ 
+                          children: const [ 
                             Icon(Icons.refresh, size: 30, color: constants.Colors.mainColor),
                             Text("Your Feed", style:constants.ThemeText.secondaryTitleTextBlue),
                           ],
@@ -64,48 +59,6 @@ class Home extends HookWidget {
                       ),
                     ),
                     buildFeed(context, songArr),
-    
-                    // // Featured Row
-                    // Padding(
-                    //   padding: const EdgeInsets.only(top: 10),
-                    //   child: Row(
-                    //     children: [
-                    //       const Text("Featured", style:constants.ThemeText.secondaryTitleTextBlue),
-                    //       Padding(
-                    //         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.45),
-                    //         child: TextButton(
-                    //           onPressed: () {
-                    //             print("pressed");
-                    //           },
-                    //           child: const Text("more",
-                    //               style: constants.ThemeText.secondaryText),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    // buildFeaturedRow(context),
-    
-                    // // Trending Row
-                    // Padding(
-                    //   padding: const EdgeInsets.only(top: 10),
-                    //   child: Row(
-                    //     children: [
-                    //       const Text("Trending Now",style: constants.ThemeText.secondaryTitleTextBlue),
-                    //       Padding(
-                    //         padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * 0.3),
-                    //         child: TextButton(
-                    //           onPressed: () {
-                    //             print("pressed");
-                    //           },
-                    //           child: const Text("more",
-                    //               style: constants.ThemeText.secondaryText),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    // buildFeaturedRow(context),
                   ],
                 ),
               ),
@@ -137,7 +90,7 @@ class Home extends HookWidget {
                       iconSize: 30.0,
                       color: constants.Colors.darkGrey,
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => AdminPage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const AdminPage()));
                       },
                     ),
                     IconButton(
@@ -145,38 +98,13 @@ class Home extends HookWidget {
                       iconSize: 30.0,
                       color: constants.Colors.darkGrey,
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Profile()));
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const Profile()));
                       },
                     ),
                   ],
                 ),
               ),
             ],
-          ),
-        ));
-  }
-
-  buildBannerRow(BuildContext context) {
-    return Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: ScrollConfiguration(
-          behavior: ScrollBehavior(),
-          child: ListView.builder(
-            primary: false,
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemCount: ads == null ? 0 : ads.length,
-            itemBuilder: (BuildContext context, int index) {
-              Map ad = ads[index];
-
-              return Container();
-              // return Padding(
-              //   padding: const EdgeInsets.only(right: 10.0),
-              //   child: BannerItem(
-              //       title: ad["item"], desc: ad["desc"], img: ad["img"]),
-              // );
-            },
           ),
         ));
   }
@@ -197,7 +125,6 @@ class Home extends HookWidget {
           var songImgLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}-Image?alt=media";
           var songFileLink = "https://firebasestorage.googleapis.com/v0/b/pepia-9b233.appspot.com/o/${artistName.toLowerCase()}%2F${songName}%2F${songName}?alt=media";
           
-
           return SongItem(img: songImgLink, songFile: songFileLink, data: songArr.value[i],);
  
         },

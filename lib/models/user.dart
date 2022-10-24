@@ -6,3 +6,5 @@ class UserAttributes {
   UserAttributes( {this.isAdmin, required this.uid, this.email} );
 
 }
+
+

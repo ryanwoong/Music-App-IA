@@ -38,8 +38,8 @@ class _SongItemState extends State<SongItem> {
                 child: InkWell(
                   splashColor: constants.Colors.lightGrey,
                   onTap: () {
-                    // print("data ${widget.data.data()["artists"]}");
-                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Player(songName: widget.data["songName"], artist: widget.data["artists"], songFileLink: widget.songFile,)));
+                    
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Player(songName: widget.data["songName"], artist: widget.data["artists"], songFileLink: widget.songFile, upvotes: widget.data["upvotes"], downvotes: widget.data["downvotes"],)));
                   },
                   child: Image.network(widget.img, fit: BoxFit.cover),
                 ),

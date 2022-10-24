@@ -1,5 +1,3 @@
-
-
 import 'package:file_picker/file_picker.dart';
 
 class SongModel {
@@ -18,3 +16,4 @@ class SongFiles {
   SongFiles({ this.songFile, this.imageFile });
 
 }
+

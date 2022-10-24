@@ -44,43 +44,57 @@ class _ProfileState extends State<Profile> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      children: const [
-                        Text(
-                          "Email",
-                          style: constants.ThemeText.secondaryTitleTextBlue,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: const [
+                            Text(
+                              "Username",
+                              style: constants.ThemeText.secondaryTitleTextBlack,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "${snapshot.data!.data()!["username"]}",
+                              style: constants.ThemeText.secondaryText,
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 25),
+                        Row(
+                          children: const [
+                            Text(
+                              "Email",
+                              style: constants.ThemeText.secondaryTitleTextBlack,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Text(
+                              "${snapshot.data!.data()!["email"]}",
+                              style: constants.ThemeText.secondaryText,
+                            )
+                          ],
                         )
                       ],
                     ),
                   ),
                   TextButton(
-                    style: TextButton.styleFrom(
-                        textStyle: const TextStyle(fontSize: 20),
-                        backgroundColor: Colors.black),
-                    onPressed: () {
+                    style: constants.Button.textButton,
+                    child: const Text(
+                      "Sign Out",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    onPressed: () async {
                       authService.signOut();
                       Navigator.pop(context);
                     },
-                    child: const Text('sign out'),
                   ),
                 ],
               ),
-              // body: Column(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     Text("${snapshot.data!["email"]}"),
-              //     TextButton(
-              //       style: TextButton.styleFrom(
-              //           textStyle: const TextStyle(fontSize: 20),
-              //           backgroundColor: Colors.black),
-              //       onPressed: () {
-              //         authService.signOut();
-              //         Navigator.pop(context);
-              //       },
-              //       child: const Text('sign out'),
-              //     ),
-              //   ],
-              // ),
             ),
           );
         }

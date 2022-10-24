@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:pep/classes/songFile.dart';
 import 'package:pep/classes/songImage.dart';
@@ -76,7 +74,7 @@ class _AdminPageState extends State<AdminPage> {
                             _currentValue = newValue!;
                           });
                         },
-                        items: <String>["Add Song", "Remove Song"]
+                        items: <String>["Add Song", ""]
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
@@ -194,12 +192,8 @@ class _AdminPageState extends State<AdminPage> {
                                         style: constants.ThemeText.smallText),
                                     onPressed: () async {
                                       // Get the file and return FileStructure and update the state of the variables
-                                      SongFile result =
-                                          await FileService().pickAudioFile();
-                                      // print("FILE: ${result.getSongFile()}");
-                                      // print("MESSAGE: ${result.getStatusMessage()}");
-                                      String? _statusMessage =
-                                          result.getStatusMessage();
+                                      SongFile result = await FileService().pickAudioFile();
+                                      String? _statusMessage = result.getStatusMessage();
                                       setState(() {
                                         if (_statusMessage == "File OK") {
                                           _errorColor =
@@ -247,10 +241,7 @@ class _AdminPageState extends State<AdminPage> {
                                       // Get the file and return FileStructure and update the state of the variables
                                       SongImage result =
                                           await FileService().pickImageFile();
-                                      // print("FILE: ${result.getSongFile()}");
-                                      // print("MESSAGE: ${result.getStatusMessage()}");
-                                      String? _statusMessage =
-                                          result.getStatusMessage();
+                                      String? _statusMessage = result.getStatusMessage();
                                       setState(() {
                                         if (_statusMessage == "File OK") {
                                           _errorColor =
@@ -297,46 +288,14 @@ class _AdminPageState extends State<AdminPage> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         onPressed: () async {
+                                          int count = 0;
+                                          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Loading()));
                                           await DatabaseService().saveSong(
                                               _songFile,
                                               _songImage,
                                               _songNameController.text,
                                               _songArtistController.text);
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                )),
-
-                            // DELETE BEFORE FINAL
-                            Padding(
-                                padding: const EdgeInsets.only(left: 20.0),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      height: 45.0,
-                                      width: 120.0,
-                                      child: TextButton(
-                                        style: constants.Button.textButton,
-                                        child: const Text(
-                                          "click",
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        onPressed: () async {
-                                          FirebaseFirestore.instance
-                                              .collection("artists")
-                                              .doc("justin")
-                                              .collection("songs")
-                                              .doc("Tester")
-                                              .get()
-                                              .then((val) {
-                                            print(val["artists"]);
-                                          });
-                                          // DatabaseService().getLikes("Justin", "Tester");
-                                          // Future<List<Reference>?> items = DatabaseService().getSongImg("Jeremy", "Summer");
-                                          // DatabaseService().getRanArtist();
-                                          // DatabaseService().getAllSongs();
+                                          Navigator.of(context).popUntil((_) => count++ >= 2);
                                         },
                                       ),
                                     ),
@@ -344,184 +303,11 @@ class _AdminPageState extends State<AdminPage> {
                                 )),
                           ],
                         )
-                      : buildRemoveSong(context))
+                      : Container())
             ],
           ),
         ),
       ),
     );
   }
-}
-
-// buildAddSong(BuildContext context, error) {
-//   final TextEditingController _songTitleController = TextEditingController();
-//   var result;
-
-//   return Container(
-//     child: Column(
-//       children: <Widget>[
-//         Padding(
-//           padding: const EdgeInsets.only(left: 20.0),
-//           child: Row(
-//             children: const <Widget>[
-//               Text("Add Song", style: constants.ThemeText.titleText),
-//             ],
-//           ),
-//         ),
-//         const SizedBox(height: 20.0),
-//         IconButton(
-//             icon: Icon(Icons.search),
-//             onPressed: () async {error = await FileService().pickFile();
-//               print(error);
-//               // final results = showSearch(context: context, delegate: SongSearch());
-//               // print("Result: ${results.toString()}");
-//             }),
-//         // SizedBox(
-//         //   width: MediaQuery.of(context).size.width * 0.85,
-//         //   child: Padding(
-//         //     padding: const EdgeInsets.only(left: 10.0),
-//         //     child: TextField(
-//         //       controller: _songTitleController,
-//         //       decoration: InputDecoration(
-//         //         floatingLabelBehavior: FloatingLabelBehavior.never,
-//         //         labelText: "Song Title",
-//         //         filled: true,
-//         //         fillColor: constants.Colors.lightGrey,
-//         //         border: OutlineInputBorder(
-//         //           borderSide: BorderSide.none,
-//         //           borderRadius: BorderRadius.circular(20.0)
-//         //         ),
-//         //       ),
-//         //       onTap: () {
-//         //         showSearch(context: context, delegate: SongSearch());
-//         //       },
-//         //     ),
-//         //   ),
-//         // ),
-//       ],
-//     ),
-//   );
-// }
-
-buildRemoveSong(BuildContext context) {
-  return Container(
-    child: Text("REMVOE"),
-  );
-}
-
-class SongSearch extends SearchDelegate<String> {
-  final songs = [
-    "song1",
-    "song2",
-    "song3",
-    "song4",
-    "song5",
-  ];
-
-  final recentSongs = [
-    "song1",
-    "song2",
-    "song4",
-  ];
-
-  @override
-  List<Widget> buildActions(BuildContext context) => [
-        IconButton(
-          icon: Icon(Icons.clear),
-          onPressed: () {
-            if (query.isEmpty) {
-              close(context, '');
-            } else {
-              query = '';
-              showSuggestions(context);
-            }
-          },
-        )
-      ];
-
-  @override
-  Widget buildLeading(BuildContext context) => IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () => close(context, ''),
-      );
-
-  @override
-  Widget buildResults(BuildContext context) => Center(
-        child: Column(
-          children: [
-            Icon(
-              Icons.location_city,
-              size: 120.0,
-            ),
-            // Query holds value of search bar text, accessible from SearchDelegate class
-            Text(
-              query,
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 64,
-                  fontWeight: FontWeight.bold),
-            )
-          ],
-        ),
-      );
-
-  @override
-  Widget buildSuggestions(BuildContext context) => FutureBuilder<List<String>>(
-        future: null /**SpotifyAPI.searchSongs(query: query)**/,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Loading();
-          } else {
-            return Loading();
-            // return buildSuggestionsSuccess(snapshot.data);
-          }
-        },
-      );
-  // {
-  //   // Check if the field is empty, if it is remove suggestions, then match the inputs with the songs
-  //   final suggestions = query.isEmpty ? recentSongs : songs.where((song) {
-  //     final songLower = song.toLowerCase();
-  //     final queryLower = query.toLowerCase();
-
-  //     return songLower.startsWith(queryLower);
-  //   }).toList();
-
-  //   return buildSuggestionsSuccess(suggestions);
-  // }
-
-  Widget buildSuggestionsSuccess(List<String> suggestions) => ListView.builder(
-        itemCount: suggestions.length,
-        itemBuilder: (context, index) {
-          final suggestion = suggestions[index];
-          // Characters to highlight, 0 to typed characters
-          final queryText = suggestion.substring(0, query.length);
-          // Chacters to leave
-          final remainingText = suggestion.substring(query.length);
-
-          return ListTile(
-            onTap: () {
-              query = suggestion;
-
-              close(context, suggestion);
-
-              // showResults(context);
-            },
-            leading: Icon(Icons.location_city),
-            // title: Text(suggestion)
-            title: RichText(
-              text: TextSpan(
-                  text: queryText,
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0),
-                  children: [
-                    TextSpan(
-                        text: remainingText,
-                        style: TextStyle(color: Colors.grey, fontSize: 18.0)),
-                  ]),
-            ),
-          );
-        },
-      );
 }
